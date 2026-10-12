@@ -13,6 +13,12 @@ chat completions, embeddings, image generation, moderation, model listing, and d
 pip install seg-sdk
 ```
 
+To update to the latest version:
+
+```sh
+pip install --upgrade seg-sdk
+```
+
 Requires Python 3.10 or newer. The distribution is `seg-sdk`; the import name is `seg`.
 
 ## Usage
