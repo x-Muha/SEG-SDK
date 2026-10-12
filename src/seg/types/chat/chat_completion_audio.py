@@ -6,7 +6,7 @@ __all__ = ["ChatCompletionAudio"]
 class ChatCompletionAudio(BaseModel):
     """
     If the audio output modality is requested, this object contains data
-    about the audio response from the model. [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+    about the audio response from the model. [Learn more](https://sovereigneg.com/dashboard/docs).
     """
 
     id: str

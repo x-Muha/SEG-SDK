@@ -36,7 +36,7 @@ from .moderation import Moderation as Moderation
 from .image_model import ImageModel as ImageModel
 from .embedding_model import EmbeddingModel as EmbeddingModel
 from .images_response import ImagesResponse as ImagesResponse
-from .completion_usage import CompletionUsage as CompletionUsage
+from .completion_usage import CostDetails as CostDetails, CompletionUsage as CompletionUsage
 from .moderation_model import ModerationModel as ModerationModel
 from .image_generate_params import ImageGenerateParams as ImageGenerateParams
 from .decision_create_params import DecisionCreateParams as DecisionCreateParams

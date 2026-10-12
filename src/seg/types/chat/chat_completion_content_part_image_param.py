@@ -13,7 +13,7 @@ class ImageURL(TypedDict, total=False):
     """Specifies the detail level of the image.
 
     Learn more in the
-    [Vision guide](https://developers.sovereigneg.com/api/docs/guides/images-vision#choose-an-image-detail-level).
+    [Vision guide](https://sovereigneg.com/dashboard/docs).
     """
 
 
@@ -29,7 +29,7 @@ class PromptCacheBreakpoint(TypedDict, total=False):
 
 class ChatCompletionContentPartImageParam(TypedDict, total=False):
     """
-    Learn about [image inputs](https://developers.sovereigneg.com/api/docs/guides/images-vision).
+    Learn about [image inputs](https://sovereigneg.com/dashboard/docs).
     """
 
     image_url: Required[ImageURL]

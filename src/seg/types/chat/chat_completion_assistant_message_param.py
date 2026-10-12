@@ -13,7 +13,7 @@ __all__ = ["ChatCompletionAssistantMessageParam", "Audio", "ContentArrayOfConten
 class Audio(TypedDict, total=False):
     """
     Data about a previous audio response from the model.
-    [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+    [Learn more](https://sovereigneg.com/dashboard/docs).
     """
 
     id: Required[str]
@@ -50,7 +50,7 @@ class ChatCompletionAssistantMessageParam(TypedDict, total=False):
     audio: Optional[Audio]
     """
     Data about a previous audio response from the model.
-    [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+    [Learn more](https://sovereigneg.com/dashboard/docs).
     """
 
     content: Union[str, Iterable[ContentArrayOfContentPart], None]

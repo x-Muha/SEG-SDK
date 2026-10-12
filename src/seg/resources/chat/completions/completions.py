@@ -142,7 +142,7 @@ class Completions(SyncAPIResource):
 
         client = SEG()
         completion = client.chat.completions.parse(
-            model="gpt-4o-2024-08-06",
+            model="llama-3.1-8b-instruct",
             messages=[
                 {"role": "system", "content": "You are a helpful math tutor."},
                 {"role": "user", "content": "solve 8x + 31 = 2"},
@@ -278,43 +278,43 @@ class Completions(SyncAPIResource):
     ) -> ChatCompletion:
         """
         **Starting a new project?** We recommend trying
-        [Responses](https://developers.sovereigneg.com/api/reference/resources/responses) to
+        [Responses](https://sovereigneg.com/dashboard/docs) to
         take advantage of the latest SEG platform features. Compare
-        [Chat Completions with Responses](https://developers.sovereigneg.com/api/docs/guides/migrate-to-responses?api-mode=responses).
+        [Chat Completions with Responses](https://sovereigneg.com/dashboard/docs).
 
         ---
 
         Creates a model response for the given chat conversation. Learn more in the
-        [text generation](https://developers.sovereigneg.com/api/docs/guides/text),
-        [vision](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-        [audio](https://developers.sovereigneg.com/api/docs/guides/audio) guides.
+        [text generation](https://sovereigneg.com/dashboard/docs),
+        [vision](https://sovereigneg.com/dashboard/docs), and
+        [audio](https://sovereigneg.com/dashboard/docs) guides.
 
         Parameter support can differ depending on the model used to generate the
         response, particularly for newer reasoning models. Parameters that are only
         supported for reasoning models are noted below. For the current state of
         unsupported parameters in reasoning models,
-        [refer to the reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+        [refer to the reasoning guide](https://sovereigneg.com/dashboard/docs).
 
         Returns a chat completion object, or a streamed sequence of chat completion
         chunk objects if the request is streamed.
 
         Args:
           messages: A list of messages comprising the conversation so far. Depending on the
-              [model](https://developers.sovereigneg.com/api/docs/models) you use, different
+              [model](https://sovereigneg.com/dashboard/docs) you use, different
               message types (modalities) are supported, like
-              [text](https://developers.sovereigneg.com/api/docs/guides/text),
-              [images](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-              [audio](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [text](https://sovereigneg.com/dashboard/docs),
+              [images](https://sovereigneg.com/dashboard/docs), and
+              [audio](https://sovereigneg.com/dashboard/docs).
 
-          model: Model ID used to generate the response, like `gpt-6-astra` or `o3`. SEG
+          model: Model ID used to generate the response, like `llama-3.1-8b-instruct` or `claude-sonnet-4.5`. SEG
               offers a wide range of models with different capabilities, performance
               characteristics, and price points. Refer to the
-              [model guide](https://developers.sovereigneg.com/api/docs/models) to browse and
+              [model guide](https://sovereigneg.com/dashboard/docs) to browse and
               compare available models.
 
           audio: Parameters for audio output. Required when audio output is requested with
               `modalities: ["audio"]`.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           frequency_penalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on their
               existing frequency in the text so far, decreasing the model's likelihood to
@@ -354,7 +354,7 @@ class Completions(SyncAPIResource):
 
           max_completion_tokens: An upper bound for the number of tokens that can be generated for a completion,
               including visible output tokens and
-              [reasoning tokens](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              [reasoning tokens](https://sovereigneg.com/dashboard/docs).
 
           max_tokens: The maximum number of [tokens](https://sovereigneg.com/tokenizer) that can
               be generated in the chat completion. This value can be used to control
@@ -362,7 +362,7 @@ class Completions(SyncAPIResource):
 
               This value is now deprecated in favor of `max_completion_tokens`, and is not
               compatible with
-              [o-series models](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              reasoning models.
 
           metadata: Set of 16 key-value pairs that can be attached to an object. This can be useful
               for storing additional information about the object in a structured format, and
@@ -376,8 +376,8 @@ class Completions(SyncAPIResource):
 
               `["text"]`
 
-              The `gpt-4o-audio-preview` model can also be used to
-              [generate audio](https://developers.sovereigneg.com/api/docs/guides/audio). To
+              Audio-capable models can also be used to
+              [generate audio](https://sovereigneg.com/dashboard/docs). To
               request that this model generate both text and audio responses, you can use:
 
               `["text", "audio"]`
@@ -389,11 +389,11 @@ class Completions(SyncAPIResource):
               choices. Keep `n` as `1` to minimize costs.
 
           parallel_tool_calls: Whether to enable
-              [parallel function calling](https://developers.sovereigneg.com/api/docs/guides/function-calling#parallel-function-calling)
+              [parallel function calling](https://sovereigneg.com/dashboard/docs)
               during tool use.
 
           prediction: Configuration for a
-              [Predicted Output](https://developers.sovereigneg.com/api/docs/guides/predicted-outputs),
+              [Predicted Output](https://sovereigneg.com/dashboard/docs),
               which can greatly improve response times when large parts of the model response
               are known ahead of time. This is most common when you are regenerating a file
               with only minor changes to most of the content.
@@ -404,16 +404,16 @@ class Completions(SyncAPIResource):
 
           prompt_cache_key: Used by SEG to cache responses for similar requests to optimize your cache
               hit rates. Replaces the `user` field.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
-          prompt_cache_options: Options for prompt caching. Supported for `gpt-5.6` and later models. By
+          prompt_cache_options: Options for prompt caching. Supported by providers that offer prompt caching. By
               default, SEG automatically chooses one implicit cache breakpoint. You can add
               explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each
               request can write up to four breakpoints. For cache matching, SEG considers
               up to the latest 80 breakpoints in the conversation, without a content-block
               lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The
               `ttl` defaults to `30m`, which is currently the only supported value. See the
-              [prompt caching guide](https://developers.sovereigneg.com/api/docs/guides/prompt-caching)
+              [prompt caching guide](https://sovereigneg.com/dashboard/docs)
               for current details.
 
           prompt_cache_retention: Deprecated. Use `prompt_cache_options.ttl` instead.
@@ -421,11 +421,10 @@ class Completions(SyncAPIResource):
               The retention policy for the prompt cache. Set to `24h` to enable extended
               prompt caching, which keeps cached prefixes active for longer, up to a maximum
               of 24 hours.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching#prompt-cache-retention).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
               This field expresses a maximum retention policy, while
               `prompt_cache_options.ttl` expresses a minimum cache lifetime. The two fields
-              are independent and do not interact. For `gpt-5.5`, `gpt-5.5-pro`, and future
-              models, only `24h` is supported.
+              are independent and do not interact. Some models only support `24h`.
 
               For older models that support both `in_memory` and `24h`, the default depends on
               your organization's data retention policy:
@@ -438,7 +437,7 @@ class Completions(SyncAPIResource):
               are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing
               reasoning effort can result in faster responses and fewer tokens used on
               reasoning in a response. Not all reasoning models support every value. See the
-              [reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning) for
+              [reasoning guide](https://sovereigneg.com/dashboard/docs) for
               model-specific support.
 
           response_format: An object specifying the format that the model must output.
@@ -446,7 +445,7 @@ class Completions(SyncAPIResource):
               Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
               Outputs which ensures the model will match your supplied JSON schema. Learn more
               in the
-              [Structured Outputs guide](https://developers.sovereigneg.com/api/docs/guides/structured-outputs).
+              [Structured Outputs guide](https://sovereigneg.com/dashboard/docs).
 
               Setting to `{ "type": "json_object" }` enables the older JSON mode, which
               ensures the message the model generates is valid JSON. Using `json_schema` is
@@ -457,7 +456,7 @@ class Completions(SyncAPIResource):
               identifies each user, with a maximum length of 128 characters. We recommend
               hashing their username or email address, in order to avoid sending us any
               identifying information.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           seed: This feature is in Beta. If specified, our system will make a best effort to
               sample deterministically, such that repeated requests with the same `seed` and
@@ -473,10 +472,10 @@ class Completions(SyncAPIResource):
               - If set to 'default', then the request will be processed with the standard
                 pricing and performance for the selected model.
               - If set to
-                '[flex](https://developers.sovereigneg.com/api/docs/guides/flex-processing)', then
+                '[flex](https://sovereigneg.com/dashboard/docs)', then
                 the request will be processed with the Flex Processing service tier.
               - To opt-in to
-                [Fast mode](https://developers.sovereigneg.com/api/docs/guides/fast-mode) at the
+                [Fast mode](https://sovereigneg.com/dashboard/docs) at the
                 request level, include the `service_tier=fast` or `service_tier=priority`
                 parameter for Responses or Chat Completions. The response will show
                 `service_tier=priority` regardless of if you specify `service_tier=fast` or
@@ -488,15 +487,15 @@ class Completions(SyncAPIResource):
               request. This response value may be different from the value set in the
               parameter.
 
-          stop: Not supported with latest reasoning models `o3` and `o4-mini`.
+          stop: Not supported by some reasoning models.
 
               Up to 4 sequences where the API will stop generating further tokens. The
               returned text will not contain the stop sequence.
 
           store: Whether or not to store the output of this chat completion request for use in
               our
-              [model distillation](https://developers.sovereigneg.com/api/docs/guides/supervised-fine-tuning#distilling-from-a-larger-model)
-              or [evals](https://developers.sovereigneg.com/api/docs/guides/evals) products.
+              [model distillation](https://sovereigneg.com/dashboard/docs)
+              or [evals](https://sovereigneg.com/dashboard/docs) products.
 
               Supports text and image inputs. Note: image inputs over 8MB will be dropped.
 
@@ -504,9 +503,9 @@ class Completions(SyncAPIResource):
               generated using
               [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).
               See the
-              [Streaming section below](https://developers.sovereigneg.com/api/reference/resources/chat/subresources/completions/streaming-events)
+              [Streaming section below](https://sovereigneg.com/dashboard/docs)
               for more information, along with the
-              [streaming responses](https://developers.sovereigneg.com/api/docs/guides/streaming-responses)
+              [streaming responses](https://sovereigneg.com/dashboard/docs)
               guide for more information on how to handle the streaming events.
 
           stream_options: Options for streaming response. Only set this when you set `stream: true`.
@@ -527,9 +526,9 @@ class Completions(SyncAPIResource):
               are present.
 
           tools: A list of tools the model may call. You can provide either
-              [custom tools](https://developers.sovereigneg.com/api/docs/guides/function-calling#custom-tools)
+              [custom tools](https://sovereigneg.com/dashboard/docs)
               or
-              [function tools](https://developers.sovereigneg.com/api/docs/guides/function-calling).
+              [function tools](https://sovereigneg.com/dashboard/docs).
 
           top_logprobs: An integer between 0 and 20 specifying the maximum number of most likely tokens
               to return at each token position, each with an associated log probability. In
@@ -546,7 +545,7 @@ class Completions(SyncAPIResource):
               `prompt_cache_key` instead to maintain caching optimizations. A stable
               identifier for your end-users. Used to boost cache hit rates by better bucketing
               similar requests and to help SEG detect and prevent abuse.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           verbosity: Constrains the verbosity of the model's response. Lower values will result in
               more concise responses, while higher values will result in more verbose
@@ -555,7 +554,7 @@ class Completions(SyncAPIResource):
 
           web_search_options: This tool searches the web for relevant results to use in a response. Learn more
               about the
-              [web search tool](https://developers.sovereigneg.com/api/docs/guides/tools-web-search).
+              [web search tool](https://sovereigneg.com/dashboard/docs).
 
           extra_headers: Send extra headers
 
@@ -617,52 +616,52 @@ class Completions(SyncAPIResource):
     ) -> Stream[ChatCompletionChunk]:
         """
         **Starting a new project?** We recommend trying
-        [Responses](https://developers.sovereigneg.com/api/reference/resources/responses) to
+        [Responses](https://sovereigneg.com/dashboard/docs) to
         take advantage of the latest SEG platform features. Compare
-        [Chat Completions with Responses](https://developers.sovereigneg.com/api/docs/guides/migrate-to-responses?api-mode=responses).
+        [Chat Completions with Responses](https://sovereigneg.com/dashboard/docs).
 
         ---
 
         Creates a model response for the given chat conversation. Learn more in the
-        [text generation](https://developers.sovereigneg.com/api/docs/guides/text),
-        [vision](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-        [audio](https://developers.sovereigneg.com/api/docs/guides/audio) guides.
+        [text generation](https://sovereigneg.com/dashboard/docs),
+        [vision](https://sovereigneg.com/dashboard/docs), and
+        [audio](https://sovereigneg.com/dashboard/docs) guides.
 
         Parameter support can differ depending on the model used to generate the
         response, particularly for newer reasoning models. Parameters that are only
         supported for reasoning models are noted below. For the current state of
         unsupported parameters in reasoning models,
-        [refer to the reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+        [refer to the reasoning guide](https://sovereigneg.com/dashboard/docs).
 
         Returns a chat completion object, or a streamed sequence of chat completion
         chunk objects if the request is streamed.
 
         Args:
           messages: A list of messages comprising the conversation so far. Depending on the
-              [model](https://developers.sovereigneg.com/api/docs/models) you use, different
+              [model](https://sovereigneg.com/dashboard/docs) you use, different
               message types (modalities) are supported, like
-              [text](https://developers.sovereigneg.com/api/docs/guides/text),
-              [images](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-              [audio](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [text](https://sovereigneg.com/dashboard/docs),
+              [images](https://sovereigneg.com/dashboard/docs), and
+              [audio](https://sovereigneg.com/dashboard/docs).
 
-          model: Model ID used to generate the response, like `gpt-6-astra` or `o3`. SEG
+          model: Model ID used to generate the response, like `llama-3.1-8b-instruct` or `claude-sonnet-4.5`. SEG
               offers a wide range of models with different capabilities, performance
               characteristics, and price points. Refer to the
-              [model guide](https://developers.sovereigneg.com/api/docs/models) to browse and
+              [model guide](https://sovereigneg.com/dashboard/docs) to browse and
               compare available models.
 
           stream: If set to true, the model response data will be streamed to the client as it is
               generated using
               [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).
               See the
-              [Streaming section below](https://developers.sovereigneg.com/api/reference/resources/chat/subresources/completions/streaming-events)
+              [Streaming section below](https://sovereigneg.com/dashboard/docs)
               for more information, along with the
-              [streaming responses](https://developers.sovereigneg.com/api/docs/guides/streaming-responses)
+              [streaming responses](https://sovereigneg.com/dashboard/docs)
               guide for more information on how to handle the streaming events.
 
           audio: Parameters for audio output. Required when audio output is requested with
               `modalities: ["audio"]`.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           frequency_penalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on their
               existing frequency in the text so far, decreasing the model's likelihood to
@@ -702,7 +701,7 @@ class Completions(SyncAPIResource):
 
           max_completion_tokens: An upper bound for the number of tokens that can be generated for a completion,
               including visible output tokens and
-              [reasoning tokens](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              [reasoning tokens](https://sovereigneg.com/dashboard/docs).
 
           max_tokens: The maximum number of [tokens](https://sovereigneg.com/tokenizer) that can
               be generated in the chat completion. This value can be used to control
@@ -710,7 +709,7 @@ class Completions(SyncAPIResource):
 
               This value is now deprecated in favor of `max_completion_tokens`, and is not
               compatible with
-              [o-series models](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              reasoning models.
 
           metadata: Set of 16 key-value pairs that can be attached to an object. This can be useful
               for storing additional information about the object in a structured format, and
@@ -724,8 +723,8 @@ class Completions(SyncAPIResource):
 
               `["text"]`
 
-              The `gpt-4o-audio-preview` model can also be used to
-              [generate audio](https://developers.sovereigneg.com/api/docs/guides/audio). To
+              Audio-capable models can also be used to
+              [generate audio](https://sovereigneg.com/dashboard/docs). To
               request that this model generate both text and audio responses, you can use:
 
               `["text", "audio"]`
@@ -737,11 +736,11 @@ class Completions(SyncAPIResource):
               choices. Keep `n` as `1` to minimize costs.
 
           parallel_tool_calls: Whether to enable
-              [parallel function calling](https://developers.sovereigneg.com/api/docs/guides/function-calling#parallel-function-calling)
+              [parallel function calling](https://sovereigneg.com/dashboard/docs)
               during tool use.
 
           prediction: Configuration for a
-              [Predicted Output](https://developers.sovereigneg.com/api/docs/guides/predicted-outputs),
+              [Predicted Output](https://sovereigneg.com/dashboard/docs),
               which can greatly improve response times when large parts of the model response
               are known ahead of time. This is most common when you are regenerating a file
               with only minor changes to most of the content.
@@ -752,16 +751,16 @@ class Completions(SyncAPIResource):
 
           prompt_cache_key: Used by SEG to cache responses for similar requests to optimize your cache
               hit rates. Replaces the `user` field.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
-          prompt_cache_options: Options for prompt caching. Supported for `gpt-5.6` and later models. By
+          prompt_cache_options: Options for prompt caching. Supported by providers that offer prompt caching. By
               default, SEG automatically chooses one implicit cache breakpoint. You can add
               explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each
               request can write up to four breakpoints. For cache matching, SEG considers
               up to the latest 80 breakpoints in the conversation, without a content-block
               lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The
               `ttl` defaults to `30m`, which is currently the only supported value. See the
-              [prompt caching guide](https://developers.sovereigneg.com/api/docs/guides/prompt-caching)
+              [prompt caching guide](https://sovereigneg.com/dashboard/docs)
               for current details.
 
           prompt_cache_retention: Deprecated. Use `prompt_cache_options.ttl` instead.
@@ -769,11 +768,10 @@ class Completions(SyncAPIResource):
               The retention policy for the prompt cache. Set to `24h` to enable extended
               prompt caching, which keeps cached prefixes active for longer, up to a maximum
               of 24 hours.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching#prompt-cache-retention).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
               This field expresses a maximum retention policy, while
               `prompt_cache_options.ttl` expresses a minimum cache lifetime. The two fields
-              are independent and do not interact. For `gpt-5.5`, `gpt-5.5-pro`, and future
-              models, only `24h` is supported.
+              are independent and do not interact. Some models only support `24h`.
 
               For older models that support both `in_memory` and `24h`, the default depends on
               your organization's data retention policy:
@@ -786,7 +784,7 @@ class Completions(SyncAPIResource):
               are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing
               reasoning effort can result in faster responses and fewer tokens used on
               reasoning in a response. Not all reasoning models support every value. See the
-              [reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning) for
+              [reasoning guide](https://sovereigneg.com/dashboard/docs) for
               model-specific support.
 
           response_format: An object specifying the format that the model must output.
@@ -794,7 +792,7 @@ class Completions(SyncAPIResource):
               Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
               Outputs which ensures the model will match your supplied JSON schema. Learn more
               in the
-              [Structured Outputs guide](https://developers.sovereigneg.com/api/docs/guides/structured-outputs).
+              [Structured Outputs guide](https://sovereigneg.com/dashboard/docs).
 
               Setting to `{ "type": "json_object" }` enables the older JSON mode, which
               ensures the message the model generates is valid JSON. Using `json_schema` is
@@ -805,7 +803,7 @@ class Completions(SyncAPIResource):
               identifies each user, with a maximum length of 128 characters. We recommend
               hashing their username or email address, in order to avoid sending us any
               identifying information.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           seed: This feature is in Beta. If specified, our system will make a best effort to
               sample deterministically, such that repeated requests with the same `seed` and
@@ -821,10 +819,10 @@ class Completions(SyncAPIResource):
               - If set to 'default', then the request will be processed with the standard
                 pricing and performance for the selected model.
               - If set to
-                '[flex](https://developers.sovereigneg.com/api/docs/guides/flex-processing)', then
+                '[flex](https://sovereigneg.com/dashboard/docs)', then
                 the request will be processed with the Flex Processing service tier.
               - To opt-in to
-                [Fast mode](https://developers.sovereigneg.com/api/docs/guides/fast-mode) at the
+                [Fast mode](https://sovereigneg.com/dashboard/docs) at the
                 request level, include the `service_tier=fast` or `service_tier=priority`
                 parameter for Responses or Chat Completions. The response will show
                 `service_tier=priority` regardless of if you specify `service_tier=fast` or
@@ -836,15 +834,15 @@ class Completions(SyncAPIResource):
               request. This response value may be different from the value set in the
               parameter.
 
-          stop: Not supported with latest reasoning models `o3` and `o4-mini`.
+          stop: Not supported by some reasoning models.
 
               Up to 4 sequences where the API will stop generating further tokens. The
               returned text will not contain the stop sequence.
 
           store: Whether or not to store the output of this chat completion request for use in
               our
-              [model distillation](https://developers.sovereigneg.com/api/docs/guides/supervised-fine-tuning#distilling-from-a-larger-model)
-              or [evals](https://developers.sovereigneg.com/api/docs/guides/evals) products.
+              [model distillation](https://sovereigneg.com/dashboard/docs)
+              or [evals](https://sovereigneg.com/dashboard/docs) products.
 
               Supports text and image inputs. Note: image inputs over 8MB will be dropped.
 
@@ -866,9 +864,9 @@ class Completions(SyncAPIResource):
               are present.
 
           tools: A list of tools the model may call. You can provide either
-              [custom tools](https://developers.sovereigneg.com/api/docs/guides/function-calling#custom-tools)
+              [custom tools](https://sovereigneg.com/dashboard/docs)
               or
-              [function tools](https://developers.sovereigneg.com/api/docs/guides/function-calling).
+              [function tools](https://sovereigneg.com/dashboard/docs).
 
           top_logprobs: An integer between 0 and 20 specifying the maximum number of most likely tokens
               to return at each token position, each with an associated log probability. In
@@ -885,7 +883,7 @@ class Completions(SyncAPIResource):
               `prompt_cache_key` instead to maintain caching optimizations. A stable
               identifier for your end-users. Used to boost cache hit rates by better bucketing
               similar requests and to help SEG detect and prevent abuse.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           verbosity: Constrains the verbosity of the model's response. Lower values will result in
               more concise responses, while higher values will result in more verbose
@@ -894,7 +892,7 @@ class Completions(SyncAPIResource):
 
           web_search_options: This tool searches the web for relevant results to use in a response. Learn more
               about the
-              [web search tool](https://developers.sovereigneg.com/api/docs/guides/tools-web-search).
+              [web search tool](https://sovereigneg.com/dashboard/docs).
 
           extra_headers: Send extra headers
 
@@ -956,52 +954,52 @@ class Completions(SyncAPIResource):
     ) -> ChatCompletion | Stream[ChatCompletionChunk]:
         """
         **Starting a new project?** We recommend trying
-        [Responses](https://developers.sovereigneg.com/api/reference/resources/responses) to
+        [Responses](https://sovereigneg.com/dashboard/docs) to
         take advantage of the latest SEG platform features. Compare
-        [Chat Completions with Responses](https://developers.sovereigneg.com/api/docs/guides/migrate-to-responses?api-mode=responses).
+        [Chat Completions with Responses](https://sovereigneg.com/dashboard/docs).
 
         ---
 
         Creates a model response for the given chat conversation. Learn more in the
-        [text generation](https://developers.sovereigneg.com/api/docs/guides/text),
-        [vision](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-        [audio](https://developers.sovereigneg.com/api/docs/guides/audio) guides.
+        [text generation](https://sovereigneg.com/dashboard/docs),
+        [vision](https://sovereigneg.com/dashboard/docs), and
+        [audio](https://sovereigneg.com/dashboard/docs) guides.
 
         Parameter support can differ depending on the model used to generate the
         response, particularly for newer reasoning models. Parameters that are only
         supported for reasoning models are noted below. For the current state of
         unsupported parameters in reasoning models,
-        [refer to the reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+        [refer to the reasoning guide](https://sovereigneg.com/dashboard/docs).
 
         Returns a chat completion object, or a streamed sequence of chat completion
         chunk objects if the request is streamed.
 
         Args:
           messages: A list of messages comprising the conversation so far. Depending on the
-              [model](https://developers.sovereigneg.com/api/docs/models) you use, different
+              [model](https://sovereigneg.com/dashboard/docs) you use, different
               message types (modalities) are supported, like
-              [text](https://developers.sovereigneg.com/api/docs/guides/text),
-              [images](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-              [audio](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [text](https://sovereigneg.com/dashboard/docs),
+              [images](https://sovereigneg.com/dashboard/docs), and
+              [audio](https://sovereigneg.com/dashboard/docs).
 
-          model: Model ID used to generate the response, like `gpt-6-astra` or `o3`. SEG
+          model: Model ID used to generate the response, like `llama-3.1-8b-instruct` or `claude-sonnet-4.5`. SEG
               offers a wide range of models with different capabilities, performance
               characteristics, and price points. Refer to the
-              [model guide](https://developers.sovereigneg.com/api/docs/models) to browse and
+              [model guide](https://sovereigneg.com/dashboard/docs) to browse and
               compare available models.
 
           stream: If set to true, the model response data will be streamed to the client as it is
               generated using
               [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).
               See the
-              [Streaming section below](https://developers.sovereigneg.com/api/reference/resources/chat/subresources/completions/streaming-events)
+              [Streaming section below](https://sovereigneg.com/dashboard/docs)
               for more information, along with the
-              [streaming responses](https://developers.sovereigneg.com/api/docs/guides/streaming-responses)
+              [streaming responses](https://sovereigneg.com/dashboard/docs)
               guide for more information on how to handle the streaming events.
 
           audio: Parameters for audio output. Required when audio output is requested with
               `modalities: ["audio"]`.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           frequency_penalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on their
               existing frequency in the text so far, decreasing the model's likelihood to
@@ -1041,7 +1039,7 @@ class Completions(SyncAPIResource):
 
           max_completion_tokens: An upper bound for the number of tokens that can be generated for a completion,
               including visible output tokens and
-              [reasoning tokens](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              [reasoning tokens](https://sovereigneg.com/dashboard/docs).
 
           max_tokens: The maximum number of [tokens](https://sovereigneg.com/tokenizer) that can
               be generated in the chat completion. This value can be used to control
@@ -1049,7 +1047,7 @@ class Completions(SyncAPIResource):
 
               This value is now deprecated in favor of `max_completion_tokens`, and is not
               compatible with
-              [o-series models](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              reasoning models.
 
           metadata: Set of 16 key-value pairs that can be attached to an object. This can be useful
               for storing additional information about the object in a structured format, and
@@ -1063,8 +1061,8 @@ class Completions(SyncAPIResource):
 
               `["text"]`
 
-              The `gpt-4o-audio-preview` model can also be used to
-              [generate audio](https://developers.sovereigneg.com/api/docs/guides/audio). To
+              Audio-capable models can also be used to
+              [generate audio](https://sovereigneg.com/dashboard/docs). To
               request that this model generate both text and audio responses, you can use:
 
               `["text", "audio"]`
@@ -1076,11 +1074,11 @@ class Completions(SyncAPIResource):
               choices. Keep `n` as `1` to minimize costs.
 
           parallel_tool_calls: Whether to enable
-              [parallel function calling](https://developers.sovereigneg.com/api/docs/guides/function-calling#parallel-function-calling)
+              [parallel function calling](https://sovereigneg.com/dashboard/docs)
               during tool use.
 
           prediction: Configuration for a
-              [Predicted Output](https://developers.sovereigneg.com/api/docs/guides/predicted-outputs),
+              [Predicted Output](https://sovereigneg.com/dashboard/docs),
               which can greatly improve response times when large parts of the model response
               are known ahead of time. This is most common when you are regenerating a file
               with only minor changes to most of the content.
@@ -1091,16 +1089,16 @@ class Completions(SyncAPIResource):
 
           prompt_cache_key: Used by SEG to cache responses for similar requests to optimize your cache
               hit rates. Replaces the `user` field.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
-          prompt_cache_options: Options for prompt caching. Supported for `gpt-5.6` and later models. By
+          prompt_cache_options: Options for prompt caching. Supported by providers that offer prompt caching. By
               default, SEG automatically chooses one implicit cache breakpoint. You can add
               explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each
               request can write up to four breakpoints. For cache matching, SEG considers
               up to the latest 80 breakpoints in the conversation, without a content-block
               lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The
               `ttl` defaults to `30m`, which is currently the only supported value. See the
-              [prompt caching guide](https://developers.sovereigneg.com/api/docs/guides/prompt-caching)
+              [prompt caching guide](https://sovereigneg.com/dashboard/docs)
               for current details.
 
           prompt_cache_retention: Deprecated. Use `prompt_cache_options.ttl` instead.
@@ -1108,11 +1106,10 @@ class Completions(SyncAPIResource):
               The retention policy for the prompt cache. Set to `24h` to enable extended
               prompt caching, which keeps cached prefixes active for longer, up to a maximum
               of 24 hours.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching#prompt-cache-retention).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
               This field expresses a maximum retention policy, while
               `prompt_cache_options.ttl` expresses a minimum cache lifetime. The two fields
-              are independent and do not interact. For `gpt-5.5`, `gpt-5.5-pro`, and future
-              models, only `24h` is supported.
+              are independent and do not interact. Some models only support `24h`.
 
               For older models that support both `in_memory` and `24h`, the default depends on
               your organization's data retention policy:
@@ -1125,7 +1122,7 @@ class Completions(SyncAPIResource):
               are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing
               reasoning effort can result in faster responses and fewer tokens used on
               reasoning in a response. Not all reasoning models support every value. See the
-              [reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning) for
+              [reasoning guide](https://sovereigneg.com/dashboard/docs) for
               model-specific support.
 
           response_format: An object specifying the format that the model must output.
@@ -1133,7 +1130,7 @@ class Completions(SyncAPIResource):
               Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
               Outputs which ensures the model will match your supplied JSON schema. Learn more
               in the
-              [Structured Outputs guide](https://developers.sovereigneg.com/api/docs/guides/structured-outputs).
+              [Structured Outputs guide](https://sovereigneg.com/dashboard/docs).
 
               Setting to `{ "type": "json_object" }` enables the older JSON mode, which
               ensures the message the model generates is valid JSON. Using `json_schema` is
@@ -1144,7 +1141,7 @@ class Completions(SyncAPIResource):
               identifies each user, with a maximum length of 128 characters. We recommend
               hashing their username or email address, in order to avoid sending us any
               identifying information.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           seed: This feature is in Beta. If specified, our system will make a best effort to
               sample deterministically, such that repeated requests with the same `seed` and
@@ -1160,10 +1157,10 @@ class Completions(SyncAPIResource):
               - If set to 'default', then the request will be processed with the standard
                 pricing and performance for the selected model.
               - If set to
-                '[flex](https://developers.sovereigneg.com/api/docs/guides/flex-processing)', then
+                '[flex](https://sovereigneg.com/dashboard/docs)', then
                 the request will be processed with the Flex Processing service tier.
               - To opt-in to
-                [Fast mode](https://developers.sovereigneg.com/api/docs/guides/fast-mode) at the
+                [Fast mode](https://sovereigneg.com/dashboard/docs) at the
                 request level, include the `service_tier=fast` or `service_tier=priority`
                 parameter for Responses or Chat Completions. The response will show
                 `service_tier=priority` regardless of if you specify `service_tier=fast` or
@@ -1175,15 +1172,15 @@ class Completions(SyncAPIResource):
               request. This response value may be different from the value set in the
               parameter.
 
-          stop: Not supported with latest reasoning models `o3` and `o4-mini`.
+          stop: Not supported by some reasoning models.
 
               Up to 4 sequences where the API will stop generating further tokens. The
               returned text will not contain the stop sequence.
 
           store: Whether or not to store the output of this chat completion request for use in
               our
-              [model distillation](https://developers.sovereigneg.com/api/docs/guides/supervised-fine-tuning#distilling-from-a-larger-model)
-              or [evals](https://developers.sovereigneg.com/api/docs/guides/evals) products.
+              [model distillation](https://sovereigneg.com/dashboard/docs)
+              or [evals](https://sovereigneg.com/dashboard/docs) products.
 
               Supports text and image inputs. Note: image inputs over 8MB will be dropped.
 
@@ -1205,9 +1202,9 @@ class Completions(SyncAPIResource):
               are present.
 
           tools: A list of tools the model may call. You can provide either
-              [custom tools](https://developers.sovereigneg.com/api/docs/guides/function-calling#custom-tools)
+              [custom tools](https://sovereigneg.com/dashboard/docs)
               or
-              [function tools](https://developers.sovereigneg.com/api/docs/guides/function-calling).
+              [function tools](https://sovereigneg.com/dashboard/docs).
 
           top_logprobs: An integer between 0 and 20 specifying the maximum number of most likely tokens
               to return at each token position, each with an associated log probability. In
@@ -1224,7 +1221,7 @@ class Completions(SyncAPIResource):
               `prompt_cache_key` instead to maintain caching optimizations. A stable
               identifier for your end-users. Used to boost cache hit rates by better bucketing
               similar requests and to help SEG detect and prevent abuse.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           verbosity: Constrains the verbosity of the model's response. Lower values will result in
               more concise responses, while higher values will result in more verbose
@@ -1233,7 +1230,7 @@ class Completions(SyncAPIResource):
 
           web_search_options: This tool searches the web for relevant results to use in a response. Learn more
               about the
-              [web search tool](https://developers.sovereigneg.com/api/docs/guides/tools-web-search).
+              [web search tool](https://sovereigneg.com/dashboard/docs).
 
           extra_headers: Send extra headers
 
@@ -1407,7 +1404,7 @@ class Completions(SyncAPIResource):
 
         ```py
         with client.chat.completions.stream(
-            model="gpt-4o-2024-08-06",
+            model="llama-3.1-8b-instruct",
             messages=[...],
         ) as stream:
             for event in stream:
@@ -1576,7 +1573,7 @@ class AsyncCompletions(AsyncAPIResource):
 
         client = AsyncSEG()
         completion = await client.chat.completions.parse(
-            model="gpt-4o-2024-08-06",
+            model="llama-3.1-8b-instruct",
             messages=[
                 {"role": "system", "content": "You are a helpful math tutor."},
                 {"role": "user", "content": "solve 8x + 31 = 2"},
@@ -1712,43 +1709,43 @@ class AsyncCompletions(AsyncAPIResource):
     ) -> ChatCompletion:
         """
         **Starting a new project?** We recommend trying
-        [Responses](https://developers.sovereigneg.com/api/reference/resources/responses) to
+        [Responses](https://sovereigneg.com/dashboard/docs) to
         take advantage of the latest SEG platform features. Compare
-        [Chat Completions with Responses](https://developers.sovereigneg.com/api/docs/guides/migrate-to-responses?api-mode=responses).
+        [Chat Completions with Responses](https://sovereigneg.com/dashboard/docs).
 
         ---
 
         Creates a model response for the given chat conversation. Learn more in the
-        [text generation](https://developers.sovereigneg.com/api/docs/guides/text),
-        [vision](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-        [audio](https://developers.sovereigneg.com/api/docs/guides/audio) guides.
+        [text generation](https://sovereigneg.com/dashboard/docs),
+        [vision](https://sovereigneg.com/dashboard/docs), and
+        [audio](https://sovereigneg.com/dashboard/docs) guides.
 
         Parameter support can differ depending on the model used to generate the
         response, particularly for newer reasoning models. Parameters that are only
         supported for reasoning models are noted below. For the current state of
         unsupported parameters in reasoning models,
-        [refer to the reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+        [refer to the reasoning guide](https://sovereigneg.com/dashboard/docs).
 
         Returns a chat completion object, or a streamed sequence of chat completion
         chunk objects if the request is streamed.
 
         Args:
           messages: A list of messages comprising the conversation so far. Depending on the
-              [model](https://developers.sovereigneg.com/api/docs/models) you use, different
+              [model](https://sovereigneg.com/dashboard/docs) you use, different
               message types (modalities) are supported, like
-              [text](https://developers.sovereigneg.com/api/docs/guides/text),
-              [images](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-              [audio](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [text](https://sovereigneg.com/dashboard/docs),
+              [images](https://sovereigneg.com/dashboard/docs), and
+              [audio](https://sovereigneg.com/dashboard/docs).
 
-          model: Model ID used to generate the response, like `gpt-6-astra` or `o3`. SEG
+          model: Model ID used to generate the response, like `llama-3.1-8b-instruct` or `claude-sonnet-4.5`. SEG
               offers a wide range of models with different capabilities, performance
               characteristics, and price points. Refer to the
-              [model guide](https://developers.sovereigneg.com/api/docs/models) to browse and
+              [model guide](https://sovereigneg.com/dashboard/docs) to browse and
               compare available models.
 
           audio: Parameters for audio output. Required when audio output is requested with
               `modalities: ["audio"]`.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           frequency_penalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on their
               existing frequency in the text so far, decreasing the model's likelihood to
@@ -1788,7 +1785,7 @@ class AsyncCompletions(AsyncAPIResource):
 
           max_completion_tokens: An upper bound for the number of tokens that can be generated for a completion,
               including visible output tokens and
-              [reasoning tokens](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              [reasoning tokens](https://sovereigneg.com/dashboard/docs).
 
           max_tokens: The maximum number of [tokens](https://sovereigneg.com/tokenizer) that can
               be generated in the chat completion. This value can be used to control
@@ -1796,7 +1793,7 @@ class AsyncCompletions(AsyncAPIResource):
 
               This value is now deprecated in favor of `max_completion_tokens`, and is not
               compatible with
-              [o-series models](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              reasoning models.
 
           metadata: Set of 16 key-value pairs that can be attached to an object. This can be useful
               for storing additional information about the object in a structured format, and
@@ -1810,8 +1807,8 @@ class AsyncCompletions(AsyncAPIResource):
 
               `["text"]`
 
-              The `gpt-4o-audio-preview` model can also be used to
-              [generate audio](https://developers.sovereigneg.com/api/docs/guides/audio). To
+              Audio-capable models can also be used to
+              [generate audio](https://sovereigneg.com/dashboard/docs). To
               request that this model generate both text and audio responses, you can use:
 
               `["text", "audio"]`
@@ -1823,11 +1820,11 @@ class AsyncCompletions(AsyncAPIResource):
               choices. Keep `n` as `1` to minimize costs.
 
           parallel_tool_calls: Whether to enable
-              [parallel function calling](https://developers.sovereigneg.com/api/docs/guides/function-calling#parallel-function-calling)
+              [parallel function calling](https://sovereigneg.com/dashboard/docs)
               during tool use.
 
           prediction: Configuration for a
-              [Predicted Output](https://developers.sovereigneg.com/api/docs/guides/predicted-outputs),
+              [Predicted Output](https://sovereigneg.com/dashboard/docs),
               which can greatly improve response times when large parts of the model response
               are known ahead of time. This is most common when you are regenerating a file
               with only minor changes to most of the content.
@@ -1838,16 +1835,16 @@ class AsyncCompletions(AsyncAPIResource):
 
           prompt_cache_key: Used by SEG to cache responses for similar requests to optimize your cache
               hit rates. Replaces the `user` field.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
-          prompt_cache_options: Options for prompt caching. Supported for `gpt-5.6` and later models. By
+          prompt_cache_options: Options for prompt caching. Supported by providers that offer prompt caching. By
               default, SEG automatically chooses one implicit cache breakpoint. You can add
               explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each
               request can write up to four breakpoints. For cache matching, SEG considers
               up to the latest 80 breakpoints in the conversation, without a content-block
               lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The
               `ttl` defaults to `30m`, which is currently the only supported value. See the
-              [prompt caching guide](https://developers.sovereigneg.com/api/docs/guides/prompt-caching)
+              [prompt caching guide](https://sovereigneg.com/dashboard/docs)
               for current details.
 
           prompt_cache_retention: Deprecated. Use `prompt_cache_options.ttl` instead.
@@ -1855,11 +1852,10 @@ class AsyncCompletions(AsyncAPIResource):
               The retention policy for the prompt cache. Set to `24h` to enable extended
               prompt caching, which keeps cached prefixes active for longer, up to a maximum
               of 24 hours.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching#prompt-cache-retention).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
               This field expresses a maximum retention policy, while
               `prompt_cache_options.ttl` expresses a minimum cache lifetime. The two fields
-              are independent and do not interact. For `gpt-5.5`, `gpt-5.5-pro`, and future
-              models, only `24h` is supported.
+              are independent and do not interact. Some models only support `24h`.
 
               For older models that support both `in_memory` and `24h`, the default depends on
               your organization's data retention policy:
@@ -1872,7 +1868,7 @@ class AsyncCompletions(AsyncAPIResource):
               are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing
               reasoning effort can result in faster responses and fewer tokens used on
               reasoning in a response. Not all reasoning models support every value. See the
-              [reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning) for
+              [reasoning guide](https://sovereigneg.com/dashboard/docs) for
               model-specific support.
 
           response_format: An object specifying the format that the model must output.
@@ -1880,7 +1876,7 @@ class AsyncCompletions(AsyncAPIResource):
               Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
               Outputs which ensures the model will match your supplied JSON schema. Learn more
               in the
-              [Structured Outputs guide](https://developers.sovereigneg.com/api/docs/guides/structured-outputs).
+              [Structured Outputs guide](https://sovereigneg.com/dashboard/docs).
 
               Setting to `{ "type": "json_object" }` enables the older JSON mode, which
               ensures the message the model generates is valid JSON. Using `json_schema` is
@@ -1891,7 +1887,7 @@ class AsyncCompletions(AsyncAPIResource):
               identifies each user, with a maximum length of 128 characters. We recommend
               hashing their username or email address, in order to avoid sending us any
               identifying information.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           seed: This feature is in Beta. If specified, our system will make a best effort to
               sample deterministically, such that repeated requests with the same `seed` and
@@ -1907,10 +1903,10 @@ class AsyncCompletions(AsyncAPIResource):
               - If set to 'default', then the request will be processed with the standard
                 pricing and performance for the selected model.
               - If set to
-                '[flex](https://developers.sovereigneg.com/api/docs/guides/flex-processing)', then
+                '[flex](https://sovereigneg.com/dashboard/docs)', then
                 the request will be processed with the Flex Processing service tier.
               - To opt-in to
-                [Fast mode](https://developers.sovereigneg.com/api/docs/guides/fast-mode) at the
+                [Fast mode](https://sovereigneg.com/dashboard/docs) at the
                 request level, include the `service_tier=fast` or `service_tier=priority`
                 parameter for Responses or Chat Completions. The response will show
                 `service_tier=priority` regardless of if you specify `service_tier=fast` or
@@ -1922,15 +1918,15 @@ class AsyncCompletions(AsyncAPIResource):
               request. This response value may be different from the value set in the
               parameter.
 
-          stop: Not supported with latest reasoning models `o3` and `o4-mini`.
+          stop: Not supported by some reasoning models.
 
               Up to 4 sequences where the API will stop generating further tokens. The
               returned text will not contain the stop sequence.
 
           store: Whether or not to store the output of this chat completion request for use in
               our
-              [model distillation](https://developers.sovereigneg.com/api/docs/guides/supervised-fine-tuning#distilling-from-a-larger-model)
-              or [evals](https://developers.sovereigneg.com/api/docs/guides/evals) products.
+              [model distillation](https://sovereigneg.com/dashboard/docs)
+              or [evals](https://sovereigneg.com/dashboard/docs) products.
 
               Supports text and image inputs. Note: image inputs over 8MB will be dropped.
 
@@ -1938,9 +1934,9 @@ class AsyncCompletions(AsyncAPIResource):
               generated using
               [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).
               See the
-              [Streaming section below](https://developers.sovereigneg.com/api/reference/resources/chat/subresources/completions/streaming-events)
+              [Streaming section below](https://sovereigneg.com/dashboard/docs)
               for more information, along with the
-              [streaming responses](https://developers.sovereigneg.com/api/docs/guides/streaming-responses)
+              [streaming responses](https://sovereigneg.com/dashboard/docs)
               guide for more information on how to handle the streaming events.
 
           stream_options: Options for streaming response. Only set this when you set `stream: true`.
@@ -1961,9 +1957,9 @@ class AsyncCompletions(AsyncAPIResource):
               are present.
 
           tools: A list of tools the model may call. You can provide either
-              [custom tools](https://developers.sovereigneg.com/api/docs/guides/function-calling#custom-tools)
+              [custom tools](https://sovereigneg.com/dashboard/docs)
               or
-              [function tools](https://developers.sovereigneg.com/api/docs/guides/function-calling).
+              [function tools](https://sovereigneg.com/dashboard/docs).
 
           top_logprobs: An integer between 0 and 20 specifying the maximum number of most likely tokens
               to return at each token position, each with an associated log probability. In
@@ -1980,7 +1976,7 @@ class AsyncCompletions(AsyncAPIResource):
               `prompt_cache_key` instead to maintain caching optimizations. A stable
               identifier for your end-users. Used to boost cache hit rates by better bucketing
               similar requests and to help SEG detect and prevent abuse.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           verbosity: Constrains the verbosity of the model's response. Lower values will result in
               more concise responses, while higher values will result in more verbose
@@ -1989,7 +1985,7 @@ class AsyncCompletions(AsyncAPIResource):
 
           web_search_options: This tool searches the web for relevant results to use in a response. Learn more
               about the
-              [web search tool](https://developers.sovereigneg.com/api/docs/guides/tools-web-search).
+              [web search tool](https://sovereigneg.com/dashboard/docs).
 
           extra_headers: Send extra headers
 
@@ -2051,52 +2047,52 @@ class AsyncCompletions(AsyncAPIResource):
     ) -> AsyncStream[ChatCompletionChunk]:
         """
         **Starting a new project?** We recommend trying
-        [Responses](https://developers.sovereigneg.com/api/reference/resources/responses) to
+        [Responses](https://sovereigneg.com/dashboard/docs) to
         take advantage of the latest SEG platform features. Compare
-        [Chat Completions with Responses](https://developers.sovereigneg.com/api/docs/guides/migrate-to-responses?api-mode=responses).
+        [Chat Completions with Responses](https://sovereigneg.com/dashboard/docs).
 
         ---
 
         Creates a model response for the given chat conversation. Learn more in the
-        [text generation](https://developers.sovereigneg.com/api/docs/guides/text),
-        [vision](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-        [audio](https://developers.sovereigneg.com/api/docs/guides/audio) guides.
+        [text generation](https://sovereigneg.com/dashboard/docs),
+        [vision](https://sovereigneg.com/dashboard/docs), and
+        [audio](https://sovereigneg.com/dashboard/docs) guides.
 
         Parameter support can differ depending on the model used to generate the
         response, particularly for newer reasoning models. Parameters that are only
         supported for reasoning models are noted below. For the current state of
         unsupported parameters in reasoning models,
-        [refer to the reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+        [refer to the reasoning guide](https://sovereigneg.com/dashboard/docs).
 
         Returns a chat completion object, or a streamed sequence of chat completion
         chunk objects if the request is streamed.
 
         Args:
           messages: A list of messages comprising the conversation so far. Depending on the
-              [model](https://developers.sovereigneg.com/api/docs/models) you use, different
+              [model](https://sovereigneg.com/dashboard/docs) you use, different
               message types (modalities) are supported, like
-              [text](https://developers.sovereigneg.com/api/docs/guides/text),
-              [images](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-              [audio](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [text](https://sovereigneg.com/dashboard/docs),
+              [images](https://sovereigneg.com/dashboard/docs), and
+              [audio](https://sovereigneg.com/dashboard/docs).
 
-          model: Model ID used to generate the response, like `gpt-6-astra` or `o3`. SEG
+          model: Model ID used to generate the response, like `llama-3.1-8b-instruct` or `claude-sonnet-4.5`. SEG
               offers a wide range of models with different capabilities, performance
               characteristics, and price points. Refer to the
-              [model guide](https://developers.sovereigneg.com/api/docs/models) to browse and
+              [model guide](https://sovereigneg.com/dashboard/docs) to browse and
               compare available models.
 
           stream: If set to true, the model response data will be streamed to the client as it is
               generated using
               [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).
               See the
-              [Streaming section below](https://developers.sovereigneg.com/api/reference/resources/chat/subresources/completions/streaming-events)
+              [Streaming section below](https://sovereigneg.com/dashboard/docs)
               for more information, along with the
-              [streaming responses](https://developers.sovereigneg.com/api/docs/guides/streaming-responses)
+              [streaming responses](https://sovereigneg.com/dashboard/docs)
               guide for more information on how to handle the streaming events.
 
           audio: Parameters for audio output. Required when audio output is requested with
               `modalities: ["audio"]`.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           frequency_penalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on their
               existing frequency in the text so far, decreasing the model's likelihood to
@@ -2136,7 +2132,7 @@ class AsyncCompletions(AsyncAPIResource):
 
           max_completion_tokens: An upper bound for the number of tokens that can be generated for a completion,
               including visible output tokens and
-              [reasoning tokens](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              [reasoning tokens](https://sovereigneg.com/dashboard/docs).
 
           max_tokens: The maximum number of [tokens](https://sovereigneg.com/tokenizer) that can
               be generated in the chat completion. This value can be used to control
@@ -2144,7 +2140,7 @@ class AsyncCompletions(AsyncAPIResource):
 
               This value is now deprecated in favor of `max_completion_tokens`, and is not
               compatible with
-              [o-series models](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              reasoning models.
 
           metadata: Set of 16 key-value pairs that can be attached to an object. This can be useful
               for storing additional information about the object in a structured format, and
@@ -2158,8 +2154,8 @@ class AsyncCompletions(AsyncAPIResource):
 
               `["text"]`
 
-              The `gpt-4o-audio-preview` model can also be used to
-              [generate audio](https://developers.sovereigneg.com/api/docs/guides/audio). To
+              Audio-capable models can also be used to
+              [generate audio](https://sovereigneg.com/dashboard/docs). To
               request that this model generate both text and audio responses, you can use:
 
               `["text", "audio"]`
@@ -2171,11 +2167,11 @@ class AsyncCompletions(AsyncAPIResource):
               choices. Keep `n` as `1` to minimize costs.
 
           parallel_tool_calls: Whether to enable
-              [parallel function calling](https://developers.sovereigneg.com/api/docs/guides/function-calling#parallel-function-calling)
+              [parallel function calling](https://sovereigneg.com/dashboard/docs)
               during tool use.
 
           prediction: Configuration for a
-              [Predicted Output](https://developers.sovereigneg.com/api/docs/guides/predicted-outputs),
+              [Predicted Output](https://sovereigneg.com/dashboard/docs),
               which can greatly improve response times when large parts of the model response
               are known ahead of time. This is most common when you are regenerating a file
               with only minor changes to most of the content.
@@ -2186,16 +2182,16 @@ class AsyncCompletions(AsyncAPIResource):
 
           prompt_cache_key: Used by SEG to cache responses for similar requests to optimize your cache
               hit rates. Replaces the `user` field.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
-          prompt_cache_options: Options for prompt caching. Supported for `gpt-5.6` and later models. By
+          prompt_cache_options: Options for prompt caching. Supported by providers that offer prompt caching. By
               default, SEG automatically chooses one implicit cache breakpoint. You can add
               explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each
               request can write up to four breakpoints. For cache matching, SEG considers
               up to the latest 80 breakpoints in the conversation, without a content-block
               lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The
               `ttl` defaults to `30m`, which is currently the only supported value. See the
-              [prompt caching guide](https://developers.sovereigneg.com/api/docs/guides/prompt-caching)
+              [prompt caching guide](https://sovereigneg.com/dashboard/docs)
               for current details.
 
           prompt_cache_retention: Deprecated. Use `prompt_cache_options.ttl` instead.
@@ -2203,11 +2199,10 @@ class AsyncCompletions(AsyncAPIResource):
               The retention policy for the prompt cache. Set to `24h` to enable extended
               prompt caching, which keeps cached prefixes active for longer, up to a maximum
               of 24 hours.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching#prompt-cache-retention).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
               This field expresses a maximum retention policy, while
               `prompt_cache_options.ttl` expresses a minimum cache lifetime. The two fields
-              are independent and do not interact. For `gpt-5.5`, `gpt-5.5-pro`, and future
-              models, only `24h` is supported.
+              are independent and do not interact. Some models only support `24h`.
 
               For older models that support both `in_memory` and `24h`, the default depends on
               your organization's data retention policy:
@@ -2220,7 +2215,7 @@ class AsyncCompletions(AsyncAPIResource):
               are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing
               reasoning effort can result in faster responses and fewer tokens used on
               reasoning in a response. Not all reasoning models support every value. See the
-              [reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning) for
+              [reasoning guide](https://sovereigneg.com/dashboard/docs) for
               model-specific support.
 
           response_format: An object specifying the format that the model must output.
@@ -2228,7 +2223,7 @@ class AsyncCompletions(AsyncAPIResource):
               Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
               Outputs which ensures the model will match your supplied JSON schema. Learn more
               in the
-              [Structured Outputs guide](https://developers.sovereigneg.com/api/docs/guides/structured-outputs).
+              [Structured Outputs guide](https://sovereigneg.com/dashboard/docs).
 
               Setting to `{ "type": "json_object" }` enables the older JSON mode, which
               ensures the message the model generates is valid JSON. Using `json_schema` is
@@ -2239,7 +2234,7 @@ class AsyncCompletions(AsyncAPIResource):
               identifies each user, with a maximum length of 128 characters. We recommend
               hashing their username or email address, in order to avoid sending us any
               identifying information.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           seed: This feature is in Beta. If specified, our system will make a best effort to
               sample deterministically, such that repeated requests with the same `seed` and
@@ -2255,10 +2250,10 @@ class AsyncCompletions(AsyncAPIResource):
               - If set to 'default', then the request will be processed with the standard
                 pricing and performance for the selected model.
               - If set to
-                '[flex](https://developers.sovereigneg.com/api/docs/guides/flex-processing)', then
+                '[flex](https://sovereigneg.com/dashboard/docs)', then
                 the request will be processed with the Flex Processing service tier.
               - To opt-in to
-                [Fast mode](https://developers.sovereigneg.com/api/docs/guides/fast-mode) at the
+                [Fast mode](https://sovereigneg.com/dashboard/docs) at the
                 request level, include the `service_tier=fast` or `service_tier=priority`
                 parameter for Responses or Chat Completions. The response will show
                 `service_tier=priority` regardless of if you specify `service_tier=fast` or
@@ -2270,15 +2265,15 @@ class AsyncCompletions(AsyncAPIResource):
               request. This response value may be different from the value set in the
               parameter.
 
-          stop: Not supported with latest reasoning models `o3` and `o4-mini`.
+          stop: Not supported by some reasoning models.
 
               Up to 4 sequences where the API will stop generating further tokens. The
               returned text will not contain the stop sequence.
 
           store: Whether or not to store the output of this chat completion request for use in
               our
-              [model distillation](https://developers.sovereigneg.com/api/docs/guides/supervised-fine-tuning#distilling-from-a-larger-model)
-              or [evals](https://developers.sovereigneg.com/api/docs/guides/evals) products.
+              [model distillation](https://sovereigneg.com/dashboard/docs)
+              or [evals](https://sovereigneg.com/dashboard/docs) products.
 
               Supports text and image inputs. Note: image inputs over 8MB will be dropped.
 
@@ -2300,9 +2295,9 @@ class AsyncCompletions(AsyncAPIResource):
               are present.
 
           tools: A list of tools the model may call. You can provide either
-              [custom tools](https://developers.sovereigneg.com/api/docs/guides/function-calling#custom-tools)
+              [custom tools](https://sovereigneg.com/dashboard/docs)
               or
-              [function tools](https://developers.sovereigneg.com/api/docs/guides/function-calling).
+              [function tools](https://sovereigneg.com/dashboard/docs).
 
           top_logprobs: An integer between 0 and 20 specifying the maximum number of most likely tokens
               to return at each token position, each with an associated log probability. In
@@ -2319,7 +2314,7 @@ class AsyncCompletions(AsyncAPIResource):
               `prompt_cache_key` instead to maintain caching optimizations. A stable
               identifier for your end-users. Used to boost cache hit rates by better bucketing
               similar requests and to help SEG detect and prevent abuse.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           verbosity: Constrains the verbosity of the model's response. Lower values will result in
               more concise responses, while higher values will result in more verbose
@@ -2328,7 +2323,7 @@ class AsyncCompletions(AsyncAPIResource):
 
           web_search_options: This tool searches the web for relevant results to use in a response. Learn more
               about the
-              [web search tool](https://developers.sovereigneg.com/api/docs/guides/tools-web-search).
+              [web search tool](https://sovereigneg.com/dashboard/docs).
 
           extra_headers: Send extra headers
 
@@ -2390,52 +2385,52 @@ class AsyncCompletions(AsyncAPIResource):
     ) -> ChatCompletion | AsyncStream[ChatCompletionChunk]:
         """
         **Starting a new project?** We recommend trying
-        [Responses](https://developers.sovereigneg.com/api/reference/resources/responses) to
+        [Responses](https://sovereigneg.com/dashboard/docs) to
         take advantage of the latest SEG platform features. Compare
-        [Chat Completions with Responses](https://developers.sovereigneg.com/api/docs/guides/migrate-to-responses?api-mode=responses).
+        [Chat Completions with Responses](https://sovereigneg.com/dashboard/docs).
 
         ---
 
         Creates a model response for the given chat conversation. Learn more in the
-        [text generation](https://developers.sovereigneg.com/api/docs/guides/text),
-        [vision](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-        [audio](https://developers.sovereigneg.com/api/docs/guides/audio) guides.
+        [text generation](https://sovereigneg.com/dashboard/docs),
+        [vision](https://sovereigneg.com/dashboard/docs), and
+        [audio](https://sovereigneg.com/dashboard/docs) guides.
 
         Parameter support can differ depending on the model used to generate the
         response, particularly for newer reasoning models. Parameters that are only
         supported for reasoning models are noted below. For the current state of
         unsupported parameters in reasoning models,
-        [refer to the reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+        [refer to the reasoning guide](https://sovereigneg.com/dashboard/docs).
 
         Returns a chat completion object, or a streamed sequence of chat completion
         chunk objects if the request is streamed.
 
         Args:
           messages: A list of messages comprising the conversation so far. Depending on the
-              [model](https://developers.sovereigneg.com/api/docs/models) you use, different
+              [model](https://sovereigneg.com/dashboard/docs) you use, different
               message types (modalities) are supported, like
-              [text](https://developers.sovereigneg.com/api/docs/guides/text),
-              [images](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-              [audio](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [text](https://sovereigneg.com/dashboard/docs),
+              [images](https://sovereigneg.com/dashboard/docs), and
+              [audio](https://sovereigneg.com/dashboard/docs).
 
-          model: Model ID used to generate the response, like `gpt-6-astra` or `o3`. SEG
+          model: Model ID used to generate the response, like `llama-3.1-8b-instruct` or `claude-sonnet-4.5`. SEG
               offers a wide range of models with different capabilities, performance
               characteristics, and price points. Refer to the
-              [model guide](https://developers.sovereigneg.com/api/docs/models) to browse and
+              [model guide](https://sovereigneg.com/dashboard/docs) to browse and
               compare available models.
 
           stream: If set to true, the model response data will be streamed to the client as it is
               generated using
               [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).
               See the
-              [Streaming section below](https://developers.sovereigneg.com/api/reference/resources/chat/subresources/completions/streaming-events)
+              [Streaming section below](https://sovereigneg.com/dashboard/docs)
               for more information, along with the
-              [streaming responses](https://developers.sovereigneg.com/api/docs/guides/streaming-responses)
+              [streaming responses](https://sovereigneg.com/dashboard/docs)
               guide for more information on how to handle the streaming events.
 
           audio: Parameters for audio output. Required when audio output is requested with
               `modalities: ["audio"]`.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           frequency_penalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on their
               existing frequency in the text so far, decreasing the model's likelihood to
@@ -2475,7 +2470,7 @@ class AsyncCompletions(AsyncAPIResource):
 
           max_completion_tokens: An upper bound for the number of tokens that can be generated for a completion,
               including visible output tokens and
-              [reasoning tokens](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              [reasoning tokens](https://sovereigneg.com/dashboard/docs).
 
           max_tokens: The maximum number of [tokens](https://sovereigneg.com/tokenizer) that can
               be generated in the chat completion. This value can be used to control
@@ -2483,7 +2478,7 @@ class AsyncCompletions(AsyncAPIResource):
 
               This value is now deprecated in favor of `max_completion_tokens`, and is not
               compatible with
-              [o-series models](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+              reasoning models.
 
           metadata: Set of 16 key-value pairs that can be attached to an object. This can be useful
               for storing additional information about the object in a structured format, and
@@ -2497,8 +2492,8 @@ class AsyncCompletions(AsyncAPIResource):
 
               `["text"]`
 
-              The `gpt-4o-audio-preview` model can also be used to
-              [generate audio](https://developers.sovereigneg.com/api/docs/guides/audio). To
+              Audio-capable models can also be used to
+              [generate audio](https://sovereigneg.com/dashboard/docs). To
               request that this model generate both text and audio responses, you can use:
 
               `["text", "audio"]`
@@ -2510,11 +2505,11 @@ class AsyncCompletions(AsyncAPIResource):
               choices. Keep `n` as `1` to minimize costs.
 
           parallel_tool_calls: Whether to enable
-              [parallel function calling](https://developers.sovereigneg.com/api/docs/guides/function-calling#parallel-function-calling)
+              [parallel function calling](https://sovereigneg.com/dashboard/docs)
               during tool use.
 
           prediction: Configuration for a
-              [Predicted Output](https://developers.sovereigneg.com/api/docs/guides/predicted-outputs),
+              [Predicted Output](https://sovereigneg.com/dashboard/docs),
               which can greatly improve response times when large parts of the model response
               are known ahead of time. This is most common when you are regenerating a file
               with only minor changes to most of the content.
@@ -2525,16 +2520,16 @@ class AsyncCompletions(AsyncAPIResource):
 
           prompt_cache_key: Used by SEG to cache responses for similar requests to optimize your cache
               hit rates. Replaces the `user` field.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
-          prompt_cache_options: Options for prompt caching. Supported for `gpt-5.6` and later models. By
+          prompt_cache_options: Options for prompt caching. Supported by providers that offer prompt caching. By
               default, SEG automatically chooses one implicit cache breakpoint. You can add
               explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each
               request can write up to four breakpoints. For cache matching, SEG considers
               up to the latest 80 breakpoints in the conversation, without a content-block
               lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The
               `ttl` defaults to `30m`, which is currently the only supported value. See the
-              [prompt caching guide](https://developers.sovereigneg.com/api/docs/guides/prompt-caching)
+              [prompt caching guide](https://sovereigneg.com/dashboard/docs)
               for current details.
 
           prompt_cache_retention: Deprecated. Use `prompt_cache_options.ttl` instead.
@@ -2542,11 +2537,10 @@ class AsyncCompletions(AsyncAPIResource):
               The retention policy for the prompt cache. Set to `24h` to enable extended
               prompt caching, which keeps cached prefixes active for longer, up to a maximum
               of 24 hours.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching#prompt-cache-retention).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
               This field expresses a maximum retention policy, while
               `prompt_cache_options.ttl` expresses a minimum cache lifetime. The two fields
-              are independent and do not interact. For `gpt-5.5`, `gpt-5.5-pro`, and future
-              models, only `24h` is supported.
+              are independent and do not interact. Some models only support `24h`.
 
               For older models that support both `in_memory` and `24h`, the default depends on
               your organization's data retention policy:
@@ -2559,7 +2553,7 @@ class AsyncCompletions(AsyncAPIResource):
               are `none`, `minimal`, `low`, `medium`, `high`, `xhigh`, and `max`. Reducing
               reasoning effort can result in faster responses and fewer tokens used on
               reasoning in a response. Not all reasoning models support every value. See the
-              [reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning) for
+              [reasoning guide](https://sovereigneg.com/dashboard/docs) for
               model-specific support.
 
           response_format: An object specifying the format that the model must output.
@@ -2567,7 +2561,7 @@ class AsyncCompletions(AsyncAPIResource):
               Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
               Outputs which ensures the model will match your supplied JSON schema. Learn more
               in the
-              [Structured Outputs guide](https://developers.sovereigneg.com/api/docs/guides/structured-outputs).
+              [Structured Outputs guide](https://sovereigneg.com/dashboard/docs).
 
               Setting to `{ "type": "json_object" }` enables the older JSON mode, which
               ensures the message the model generates is valid JSON. Using `json_schema` is
@@ -2578,7 +2572,7 @@ class AsyncCompletions(AsyncAPIResource):
               identifies each user, with a maximum length of 128 characters. We recommend
               hashing their username or email address, in order to avoid sending us any
               identifying information.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           seed: This feature is in Beta. If specified, our system will make a best effort to
               sample deterministically, such that repeated requests with the same `seed` and
@@ -2594,10 +2588,10 @@ class AsyncCompletions(AsyncAPIResource):
               - If set to 'default', then the request will be processed with the standard
                 pricing and performance for the selected model.
               - If set to
-                '[flex](https://developers.sovereigneg.com/api/docs/guides/flex-processing)', then
+                '[flex](https://sovereigneg.com/dashboard/docs)', then
                 the request will be processed with the Flex Processing service tier.
               - To opt-in to
-                [Fast mode](https://developers.sovereigneg.com/api/docs/guides/fast-mode) at the
+                [Fast mode](https://sovereigneg.com/dashboard/docs) at the
                 request level, include the `service_tier=fast` or `service_tier=priority`
                 parameter for Responses or Chat Completions. The response will show
                 `service_tier=priority` regardless of if you specify `service_tier=fast` or
@@ -2609,15 +2603,15 @@ class AsyncCompletions(AsyncAPIResource):
               request. This response value may be different from the value set in the
               parameter.
 
-          stop: Not supported with latest reasoning models `o3` and `o4-mini`.
+          stop: Not supported by some reasoning models.
 
               Up to 4 sequences where the API will stop generating further tokens. The
               returned text will not contain the stop sequence.
 
           store: Whether or not to store the output of this chat completion request for use in
               our
-              [model distillation](https://developers.sovereigneg.com/api/docs/guides/supervised-fine-tuning#distilling-from-a-larger-model)
-              or [evals](https://developers.sovereigneg.com/api/docs/guides/evals) products.
+              [model distillation](https://sovereigneg.com/dashboard/docs)
+              or [evals](https://sovereigneg.com/dashboard/docs) products.
 
               Supports text and image inputs. Note: image inputs over 8MB will be dropped.
 
@@ -2639,9 +2633,9 @@ class AsyncCompletions(AsyncAPIResource):
               are present.
 
           tools: A list of tools the model may call. You can provide either
-              [custom tools](https://developers.sovereigneg.com/api/docs/guides/function-calling#custom-tools)
+              [custom tools](https://sovereigneg.com/dashboard/docs)
               or
-              [function tools](https://developers.sovereigneg.com/api/docs/guides/function-calling).
+              [function tools](https://sovereigneg.com/dashboard/docs).
 
           top_logprobs: An integer between 0 and 20 specifying the maximum number of most likely tokens
               to return at each token position, each with an associated log probability. In
@@ -2658,7 +2652,7 @@ class AsyncCompletions(AsyncAPIResource):
               `prompt_cache_key` instead to maintain caching optimizations. A stable
               identifier for your end-users. Used to boost cache hit rates by better bucketing
               similar requests and to help SEG detect and prevent abuse.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           verbosity: Constrains the verbosity of the model's response. Lower values will result in
               more concise responses, while higher values will result in more verbose
@@ -2667,7 +2661,7 @@ class AsyncCompletions(AsyncAPIResource):
 
           web_search_options: This tool searches the web for relevant results to use in a response. Learn more
               about the
-              [web search tool](https://developers.sovereigneg.com/api/docs/guides/tools-web-search).
+              [web search tool](https://sovereigneg.com/dashboard/docs).
 
           extra_headers: Send extra headers
 
@@ -2841,7 +2835,7 @@ class AsyncCompletions(AsyncAPIResource):
 
         ```py
         async with client.chat.completions.stream(
-            model="gpt-4o-2024-08-06",
+            model="llama-3.1-8b-instruct",
             messages=[...],
         ) as stream:
             async for event in stream:

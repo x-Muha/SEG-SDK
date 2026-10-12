@@ -11,7 +11,7 @@ __all__ = ["ChatCompletionSystemMessageParam"]
 class ChatCompletionSystemMessageParam(TypedDict, total=False):
     """
     Developer-provided instructions that the model should follow, regardless of
-    messages sent by the user. With o1 models and newer, use `developer` messages
+    messages sent by the user. With newer reasoning models, use `developer` messages
     for this purpose instead.
     """
 

@@ -25,7 +25,7 @@ class PromptCacheBreakpoint(TypedDict, total=False):
 
 class ChatCompletionContentPartInputAudioParam(TypedDict, total=False):
     """
-    Learn about [audio inputs](https://developers.sovereigneg.com/api/docs/guides/audio).
+    Learn about [audio inputs](https://sovereigneg.com/dashboard/docs).
     """
 
     input_audio: Required[InputAudio]

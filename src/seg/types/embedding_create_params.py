@@ -11,32 +11,24 @@ __all__ = ["EmbeddingCreateParams"]
 
 class EmbeddingCreateParams(TypedDict, total=False):
     input: Required[Union[str, SequenceNotStr[str], Iterable[int], Iterable[Iterable[int]]]]
-    """Input text to embed, encoded as a string or array of tokens.
+    """Input text to embed, as a string or an array of strings.
 
-    To embed multiple inputs in a single request, pass an array of strings or array
-    of token arrays. The input must not exceed the max input tokens for the model
-    (8192 tokens for all embedding models), cannot be an empty string, and any array
-    must be 2048 dimensions or less.
-    [Example Python code](https://cookbook.sovereigneg.com/examples/how_to_count_tokens_with_tiktoken)
-    for counting tokens. In addition to the per-input token limit, all embedding
-    models enforce a maximum of 300,000 tokens summed across all inputs in a single
-    request.
+    Token arrays are accepted for providers that support them. The input cannot be an
+    empty string and must fit the model's `context_window` (see
+    `client.models.retrieve`).
     """
 
     model: Required[Union[str, EmbeddingModel]]
-    """ID of the model to use.
+    """ID of an embedding model from the SovereignEG catalog, e.g. `embeddinggemma-300m`.
 
-    You can use the
-    [List models](https://developers.sovereigneg.com/api/reference/resources/models/methods/list)
-    API to see all of your available models, or see our
-    [Model overview](https://developers.sovereigneg.com/api/docs/models) for descriptions
-    of them.
+    List the catalog with `client.models.list()` and pick an entry whose `modality` is
+    `"embed"`. See the [SovereignEG docs](https://sovereigneg.com/dashboard/docs).
     """
 
     dimensions: int
     """The number of dimensions the resulting output embeddings should have.
 
-    Only supported in `text-embedding-3` and later models.
+    Only honoured by models that support truncated embeddings.
     """
 
     encoding_format: Literal["float", "base64"]
@@ -49,5 +41,5 @@ class EmbeddingCreateParams(TypedDict, total=False):
     """
     A unique identifier representing your end-user, which can help SEG to monitor
     and detect abuse.
-    [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+    [Learn more](https://sovereigneg.com/dashboard/docs).
     """

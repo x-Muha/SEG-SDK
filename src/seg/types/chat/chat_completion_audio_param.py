@@ -22,7 +22,7 @@ class ChatCompletionAudioParam(TypedDict, total=False):
     """Parameters for audio output.
 
     Required when audio output is requested with
-    `modalities: ["audio"]`. [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+    `modalities: ["audio"]`. [Learn more](https://sovereigneg.com/dashboard/docs).
     """
 
     format: Required[Literal["wav", "aac", "mp3", "flac", "opus", "pcm16"]]

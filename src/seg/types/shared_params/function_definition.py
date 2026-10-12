@@ -25,7 +25,7 @@ class FunctionDefinition(TypedDict, total=False):
     parameters: FunctionParameters
     """The parameters the functions accepts, described as a JSON Schema object.
 
-    See the [guide](https://developers.sovereigneg.com/api/docs/guides/function-calling)
+    See the [guide](https://sovereigneg.com/dashboard/docs)
     for examples, and the
     [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for
     documentation about the format.
@@ -39,5 +39,5 @@ class FunctionDefinition(TypedDict, total=False):
     If set to true, the model will follow the exact schema defined in the
     `parameters` field. Only a subset of JSON Schema is supported when `strict` is
     `true`. Learn more about Structured Outputs in the
-    [function calling guide](https://developers.sovereigneg.com/api/docs/guides/function-calling).
+    [function calling guide](https://sovereigneg.com/dashboard/docs).
     """

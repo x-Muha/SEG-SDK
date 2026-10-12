@@ -238,7 +238,7 @@ Emitted when a function tool call's arguments are complete.
 
 #### LogprobsContentDeltaEvent
 
-Emitted when a chunk contains new content [log probabilities](https://cookbook.sovereigneg.com/examples/using_logprobs).
+Emitted when a chunk contains new content [log probabilities](https://sovereigneg.com/dashboard/docs).
 
 - `type`: `"logprobs.content.delta"`
 - `content`: A list of the new log probabilities received in this chunk
@@ -246,14 +246,14 @@ Emitted when a chunk contains new content [log probabilities](https://cookbook.s
 
 #### LogprobsContentDoneEvent
 
-Emitted when all content [log probabilities](https://cookbook.sovereigneg.com/examples/using_logprobs) have been received.
+Emitted when all content [log probabilities](https://sovereigneg.com/dashboard/docs) have been received.
 
 - `type`: `"logprobs.content.done"`
 - `content`: The full list of token log probabilities for the content
 
 #### LogprobsRefusalDeltaEvent
 
-Emitted when a chunk contains new refusal [log probabilities](https://cookbook.sovereigneg.com/examples/using_logprobs).
+Emitted when a chunk contains new refusal [log probabilities](https://sovereigneg.com/dashboard/docs).
 
 - `type`: `"logprobs.refusal.delta"`
 - `refusal`: A list of the new log probabilities received in this chunk
@@ -261,7 +261,7 @@ Emitted when a chunk contains new refusal [log probabilities](https://cookbook.s
 
 #### LogprobsRefusalDoneEvent
 
-Emitted when all refusal [log probabilities](https://cookbook.sovereigneg.com/examples/using_logprobs) have been received.
+Emitted when all refusal [log probabilities](https://sovereigneg.com/dashboard/docs) have been received.
 
 - `type`: `"logprobs.refusal.done"`
 - `refusal`: The full list of token log probabilities for the refusal

@@ -17,7 +17,7 @@ class PromptCacheBreakpoint(BaseModel):
 
 
 class ChatCompletionContentPartText(BaseModel):
-    """Learn about [text inputs](https://developers.sovereigneg.com/api/docs/guides/text)."""
+    """Learn about [text inputs](https://sovereigneg.com/dashboard/docs)."""
 
     text: str
     """The text content."""

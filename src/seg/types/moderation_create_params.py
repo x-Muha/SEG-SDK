@@ -19,10 +19,8 @@ class ModerationCreateParams(TypedDict, total=False):
     """
 
     model: Union[str, ModerationModel]
-    """The content moderation model you would like to use.
+    """Optional moderation model id.
 
-    Learn more in
-    [the moderation guide](https://developers.sovereigneg.com/api/docs/guides/moderation),
-    and learn about available models
-    [here](https://developers.sovereigneg.com/api/docs/guides/moderation).
+    The gateway currently serves a single scorer (`sovereigneg-basic-keyword-check`),
+    so this can be omitted.
     """

@@ -36,7 +36,7 @@ class FilePromptCacheBreakpoint(TypedDict, total=False):
 
 class File(TypedDict, total=False):
     """
-    Learn about [file inputs](https://developers.sovereigneg.com/api/docs/guides/text) for text generation.
+    Learn about [file inputs](https://sovereigneg.com/dashboard/docs) for text generation.
     """
 
     file: Required[FileFile]

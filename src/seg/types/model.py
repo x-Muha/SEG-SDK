@@ -55,6 +55,18 @@ class Model(BaseModel):
 
     supported_parameters: Optional[List[str]] = None
 
+    image_options: Optional[Dict[str, Any]] = None
+    """Image-model options such as the accepted `size` format and supported modes."""
+
+    weights_type: Optional[str] = None
+    """"open_weights" or "proprietary", when known."""
+
+    benchmarks: Optional[Dict[str, Any]] = None
+    """Published benchmark scores, when the catalog has them."""
+
+    card_url: Optional[str] = None
+    """Link to the model card, when the catalog has one."""
+
     status: Optional[str] = None
     """Lifecycle status, e.g. "live" or "deprecated"."""
 

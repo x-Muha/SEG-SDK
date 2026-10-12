@@ -55,20 +55,19 @@ class Moderations(SyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx2.Timeout | None | NotGiven = not_given,
     ) -> ModerationCreateResponse:
-        """Classifies if text and/or image inputs are potentially harmful.
+        """Scores text inputs against the SovereignEG moderation categories.
 
-        Learn more in
-        the
-        [moderation guide](https://developers.sovereigneg.com/api/docs/guides/moderation).
+        The gateway currently runs a basic keyword scorer (reported as
+        `sovereigneg-basic-keyword-check` in the response `model`). It returns a `flagged`
+        boolean and a per-category score for each input. Treat the result as a coarse
+        pre-filter, not a full safety classifier. See the [SovereignEG docs](https://sovereigneg.com/dashboard/docs).
 
         Args:
           input: Input (or inputs) to classify. Can be a single string, an array of strings, or
-              an array of multi-modal input objects similar to other models.
+              an array of multi-modal input objects; only the text parts are scored today.
 
-          model: The content moderation model you would like to use. Learn more in
-              [the moderation guide](https://developers.sovereigneg.com/api/docs/guides/moderation),
-              and learn about available models
-              [here](https://developers.sovereigneg.com/api/docs/guides/moderation).
+          model: Optional moderation model id. The gateway currently serves a single scorer, so
+              this can be omitted.
 
           extra_headers: Send extra headers
 
@@ -134,20 +133,19 @@ class AsyncModerations(AsyncAPIResource):
         extra_body: Body | None = None,
         timeout: float | httpx2.Timeout | None | NotGiven = not_given,
     ) -> ModerationCreateResponse:
-        """Classifies if text and/or image inputs are potentially harmful.
+        """Scores text inputs against the SovereignEG moderation categories.
 
-        Learn more in
-        the
-        [moderation guide](https://developers.sovereigneg.com/api/docs/guides/moderation).
+        The gateway currently runs a basic keyword scorer (reported as
+        `sovereigneg-basic-keyword-check` in the response `model`). It returns a `flagged`
+        boolean and a per-category score for each input. Treat the result as a coarse
+        pre-filter, not a full safety classifier. See the [SovereignEG docs](https://sovereigneg.com/dashboard/docs).
 
         Args:
           input: Input (or inputs) to classify. Can be a single string, an array of strings, or
-              an array of multi-modal input objects similar to other models.
+              an array of multi-modal input objects; only the text parts are scored today.
 
-          model: The content moderation model you would like to use. Learn more in
-              [the moderation guide](https://developers.sovereigneg.com/api/docs/guides/moderation),
-              and learn about available models
-              [here](https://developers.sovereigneg.com/api/docs/guides/moderation).
+          model: Optional moderation model id. The gateway currently serves a single scorer, so
+              this can be omitted.
 
           extra_headers: Send extra headers
 

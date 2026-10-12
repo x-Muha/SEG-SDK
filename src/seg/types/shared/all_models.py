@@ -1,33 +1,9 @@
 from typing import Union
-from typing_extensions import Literal, TypeAlias
+from typing_extensions import TypeAlias
 
 from .chat_model import ChatModel
 
 __all__ = ["AllModels"]
 
-AllModels: TypeAlias = Union[
-    str,
-    ChatModel,
-    Literal[
-        "o1-pro",
-        "o1-pro-2025-03-19",
-        "o3-pro",
-        "o3-pro-2025-06-10",
-        "o3-deep-research",
-        "o3-deep-research-2025-06-26",
-        "o4-mini-deep-research",
-        "o4-mini-deep-research-2025-06-26",
-        "computer-use-preview",
-        "computer-use-preview-2025-03-11",
-        "gpt-5.5-pro",
-        "gpt-5.5-pro-2026-04-23",
-        "gpt-5-codex",
-        "gpt-5-pro",
-        "gpt-5-pro-2025-10-06",
-        "gpt-5.1-codex-max",
-        "gpt-daybreak-blue-latest",
-        "gpt-daybreak-red-latest",
-        "gpt-5.6-cyber",
-        "gpt-rosalind-research",
-    ],
-]
+AllModels: TypeAlias = Union[str, ChatModel]
+"""Any model id accepted by the chat endpoint; kept as an alias of `ChatModel` for compatibility."""

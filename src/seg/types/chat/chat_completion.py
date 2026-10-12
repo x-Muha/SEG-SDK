@@ -43,7 +43,7 @@ class Choice(BaseModel):
     reached, `content_filter` if content was omitted due to a flag from our content
     filters, `tool_calls` if the model called a tool, or `function_call`
     (deprecated) if the model called a function. Read the
-    [Model Spec](https://model-spec.sovereigneg.com/2025-12-18.html) for more.
+    [Model Spec](https://sovereigneg.com/dashboard/docs) for more.
     """
 
     index: int
@@ -235,10 +235,10 @@ class ChatCompletion(BaseModel):
     - If set to 'default', then the request will be processed with the standard
       pricing and performance for the selected model.
     - If set to
-      '[flex](https://developers.sovereigneg.com/api/docs/guides/flex-processing)', then
+      '[flex](https://sovereigneg.com/dashboard/docs)', then
       the request will be processed with the Flex Processing service tier.
     - To opt-in to
-      [Fast mode](https://developers.sovereigneg.com/api/docs/guides/fast-mode) at the
+      [Fast mode](https://sovereigneg.com/dashboard/docs) at the
       request level, include the `service_tier=fast` or `service_tier=priority`
       parameter for Responses or Chat Completions. The response will show
       `service_tier=priority` regardless of if you specify `service_tier=fast` or

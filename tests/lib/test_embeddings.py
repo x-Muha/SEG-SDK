@@ -209,3 +209,46 @@ async def test_async_create_uses_decoder(
 
     assert route.call_count == 1
     assert_request_and_response(route.calls.last.request, response, encoding_format)
+
+
+@pytest.mark.respx2()
+@pytest.mark.usefixtures("decoder")
+@pytest.mark.parametrize("client", [True], indirect=True)
+@pytest.mark.parametrize("encoding_format", [omit, "base64"], ids=["default", "explicit-base64"])
+def test_sync_strict_client_decodes_base64(
+    client: SEG, respx2_mock: MockRouter, encoding_format: EncodingFormat
+) -> None:
+    # Strict validation runs before the post-parser, so `Embedding` must decode base64 itself.
+    route = respx2_mock.post(f"{str(client.base_url).rstrip('/')}/embeddings").mock(
+        return_value=httpx2.Response(200, json=response_body(ENCODED))
+    )
+
+    response = client.embeddings.create(
+        input="test input", model="embeddinggemma-300m", encoding_format=encoding_format
+    )
+
+    assert route.call_count == 1
+    body = json.loads(route.calls.last.request.content)
+    assert body["encoding_format"] == "base64"
+    assert response.data[0].embedding == VALUES
+
+
+@pytest.mark.respx2()
+@pytest.mark.usefixtures("decoder")
+@pytest.mark.parametrize("async_client", [True], indirect=True)
+@pytest.mark.parametrize("encoding_format", [omit, "base64"], ids=["default", "explicit-base64"])
+async def test_async_strict_client_decodes_base64(
+    async_client: AsyncSEG, respx2_mock: MockRouter, encoding_format: EncodingFormat
+) -> None:
+    route = respx2_mock.post(f"{str(async_client.base_url).rstrip('/')}/embeddings").mock(
+        return_value=httpx2.Response(200, json=response_body(ENCODED))
+    )
+
+    response = await async_client.embeddings.create(
+        input="test input", model="embeddinggemma-300m", encoding_format=encoding_format
+    )
+
+    assert route.call_count == 1
+    body = json.loads(route.calls.last.request.content)
+    assert body["encoding_format"] == "base64"
+    assert response.data[0].embedding == VALUES

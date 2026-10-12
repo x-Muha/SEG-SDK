@@ -1871,7 +1871,7 @@ wheels = [
 
 [[package]]
 name = "seg-sdk"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "." }
 default-groups = ["dev", "pydantic-v2"]
 dependencies = [

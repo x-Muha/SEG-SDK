@@ -9,7 +9,7 @@ class ResponseFormatTextPython(BaseModel):
     """Configure the model to generate valid Python code.
 
     See the
-    [custom grammars guide](https://developers.sovereigneg.com/api/docs/guides/function-calling#context-free-grammars) for more details.
+    [custom grammars guide](https://sovereigneg.com/dashboard/docs) for more details.
     """
 
     type: Literal["python"]

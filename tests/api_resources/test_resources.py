@@ -258,8 +258,8 @@ class TestEmbeddings:
         body = _sent_json(route)
         assert body["model"] == "embed-model"
         assert body["input"] == "Cairo at night"
-        # The SDK asks for base64 floats by default to shrink the payload; the gateway may ignore it.
-        assert body.get("encoding_format", "base64") == "base64"
+        # The SDK asks for base64 floats by default to shrink the payload.
+        assert body["encoding_format"] == "base64"
 
     async def test_async_create(self, async_client: AsyncSEG, respx2_mock: MockRouter) -> None:
         respx2_mock.post("/embeddings").mock(return_value=httpx2.Response(200, json=EMBEDDING))

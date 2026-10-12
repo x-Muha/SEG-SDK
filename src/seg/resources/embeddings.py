@@ -64,31 +64,25 @@ class Embeddings(SyncAPIResource):
         Creates an embedding vector representing the input text.
 
         Args:
-          input: Input text to embed, encoded as a string or array of tokens. To embed multiple
-              inputs in a single request, pass an array of strings or array of token arrays.
-              The input must not exceed the max input tokens for the model (8192 tokens for
-              all embedding models), cannot be an empty string, and any array must be 2048
-              dimensions or less.
-              [Example Python code](https://cookbook.sovereigneg.com/examples/how_to_count_tokens_with_tiktoken)
-              for counting tokens. In addition to the per-input token limit, all embedding
-              models enforce a maximum of 300,000 tokens summed across all inputs in a single
-              request.
+          input: Input text to embed, as a string or an array of strings. Token arrays are
+              accepted for providers that support them. The input cannot be an empty string
+              and must fit the model's `context_window` (see `client.models.retrieve`).
 
-          model: ID of the model to use. You can use the
-              [List models](https://developers.sovereigneg.com/api/reference/resources/models/methods/list)
-              API to see all of your available models, or see our
-              [Model overview](https://developers.sovereigneg.com/api/docs/models) for descriptions
-              of them.
+          model: ID of an embedding model from the SovereignEG catalog, e.g.
+              `embeddinggemma-300m`. List the catalog with `client.models.list()` and pick an
+              entry whose `modality` is `"embed"`. See the [SovereignEG docs](https://sovereigneg.com/dashboard/docs).
 
           dimensions: The number of dimensions the resulting output embeddings should have. Only
-              supported in `text-embedding-3` and later models.
+              honoured by models that support truncated embeddings.
 
           encoding_format: The format to return the embeddings in. Can be either `float` or
-              [`base64`](https://pypi.org/project/pybase64/).
+              `base64`. When omitted, the SDK requests `base64` and decodes it to floats for you.
+              Clients created with `_strict_response_validation=True` always decode `base64`
+              to floats, even when you ask for it explicitly.
 
           user: A unique identifier representing your end-user, which can help SEG to monitor
               and detect abuse.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           extra_headers: Send extra headers
 
@@ -106,6 +100,9 @@ class Embeddings(SyncAPIResource):
             "encoding_format": encoding_format,
         }
         if not is_given(encoding_format):
+            # Ask for base64: it is smaller on the wire and faster to parse than JSON floats.
+            # `Embedding` decodes it during validation and `parse_embedding_response` decodes
+            # it for constructed (non-strict) responses, so callers always get floats.
             params["encoding_format"] = "base64"
 
         return self._post(
@@ -166,31 +163,25 @@ class AsyncEmbeddings(AsyncAPIResource):
         Creates an embedding vector representing the input text.
 
         Args:
-          input: Input text to embed, encoded as a string or array of tokens. To embed multiple
-              inputs in a single request, pass an array of strings or array of token arrays.
-              The input must not exceed the max input tokens for the model (8192 tokens for
-              all embedding models), cannot be an empty string, and any array must be 2048
-              dimensions or less.
-              [Example Python code](https://cookbook.sovereigneg.com/examples/how_to_count_tokens_with_tiktoken)
-              for counting tokens. In addition to the per-input token limit, all embedding
-              models enforce a maximum of 300,000 tokens summed across all inputs in a single
-              request.
+          input: Input text to embed, as a string or an array of strings. Token arrays are
+              accepted for providers that support them. The input cannot be an empty string
+              and must fit the model's `context_window` (see `client.models.retrieve`).
 
-          model: ID of the model to use. You can use the
-              [List models](https://developers.sovereigneg.com/api/reference/resources/models/methods/list)
-              API to see all of your available models, or see our
-              [Model overview](https://developers.sovereigneg.com/api/docs/models) for descriptions
-              of them.
+          model: ID of an embedding model from the SovereignEG catalog, e.g.
+              `embeddinggemma-300m`. List the catalog with `client.models.list()` and pick an
+              entry whose `modality` is `"embed"`. See the [SovereignEG docs](https://sovereigneg.com/dashboard/docs).
 
           dimensions: The number of dimensions the resulting output embeddings should have. Only
-              supported in `text-embedding-3` and later models.
+              honoured by models that support truncated embeddings.
 
           encoding_format: The format to return the embeddings in. Can be either `float` or
-              [`base64`](https://pypi.org/project/pybase64/).
+              `base64`. When omitted, the SDK requests `base64` and decodes it to floats for you.
+              Clients created with `_strict_response_validation=True` always decode `base64`
+              to floats, even when you ask for it explicitly.
 
           user: A unique identifier representing your end-user, which can help SEG to monitor
               and detect abuse.
-              [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+              [Learn more](https://sovereigneg.com/dashboard/docs).
 
           extra_headers: Send extra headers
 
@@ -208,6 +199,9 @@ class AsyncEmbeddings(AsyncAPIResource):
             "encoding_format": encoding_format,
         }
         if not is_given(encoding_format):
+            # Ask for base64: it is smaller on the wire and faster to parse than JSON floats.
+            # `Embedding` decodes it during validation and `parse_embedding_response` decodes
+            # it for constructed (non-strict) responses, so callers always get floats.
             params["encoding_format"] = "base64"
 
         return await self._post(

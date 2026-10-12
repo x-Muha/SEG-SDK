@@ -67,14 +67,14 @@ class ChatCompletionMessage(BaseModel):
     annotations: Optional[List[Annotation]] = None
     """
     Annotations for the message, when applicable, as when using the
-    [web search tool](https://developers.sovereigneg.com/api/docs/guides/tools-web-search).
+    [web search tool](https://sovereigneg.com/dashboard/docs).
     """
 
     audio: Optional[ChatCompletionAudio] = None
     """
     If the audio output modality is requested, this object contains data about the
     audio response from the model.
-    [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+    [Learn more](https://sovereigneg.com/dashboard/docs).
     """
 
     function_call: Optional[FunctionCall] = None

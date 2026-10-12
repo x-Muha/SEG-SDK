@@ -74,6 +74,9 @@ class ImagesResponse(BaseModel):
     quality: Optional[str] = None
     """The quality requested for the image generation, as echoed by the gateway."""
 
+    runtime_ms: Optional[int] = None
+    """Wall-clock time the provider spent generating the image, in milliseconds."""
+
     size: Union[str, Literal["1024x1024", "1024x1536", "1536x1024"], None] = None
     """The image dimensions as a `WIDTHxHEIGHT` string, for example `1536x864`."""
 

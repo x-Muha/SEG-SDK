@@ -171,10 +171,14 @@ ParsedChatCompletion(
         completion_tokens_details=CompletionTokensDetails(
             accepted_prediction_tokens=None,
             audio_tokens=None,
+            image_tokens=None,
             reasoning_tokens=0,
             rejected_prediction_tokens=None,
             text_tokens=None
         ),
+        cost=None,
+        cost_details=None,
+        is_byok=None,
         prompt_tokens=79,
         prompt_tokens_details=None,
         total_tokens=93

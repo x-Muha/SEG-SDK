@@ -17,9 +17,7 @@ class UsageInputTokensDetails(BaseModel):
 
 
 class Usage(BaseModel):
-    """
-    For the GPT image models only, the token usage information for the image generation.
-    """
+    """Token usage for the image generation, when the provider reports it."""
 
     input_tokens: int
     """The number of tokens (images and text) in the input prompt."""
@@ -59,7 +57,4 @@ class ImageGenCompletedEvent(BaseModel):
     """The type of the event. Always `image_generation.completed`."""
 
     usage: Usage
-    """
-    For the GPT image models only, the token usage information for the image
-    generation.
-    """
+    """Token usage for the image generation, when the provider reports it."""

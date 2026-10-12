@@ -11,18 +11,17 @@ class Image(BaseModel):
     b64_json: Optional[str] = None
     """The base64-encoded JSON of the generated image.
 
-    Returned by default for GPT image models, or when `response_format` is set to
-    `b64_json` for models that support that parameter.
+    Returned by most providers, and whenever `response_format` is `b64_json`.
     """
 
     revised_prompt: Optional[str] = None
     """
-    The revised prompt used to generate the image, for models that support prompt
-    revision. Not returned by GPT image models.
+    The revised prompt used to generate the image, for providers that support prompt
+    revision.
     """
 
     url: Optional[str] = None
     """
-    The URL of the generated image when `response_format` is set to `url` for models
-    that support that parameter. Unsupported for GPT image models.
+    The URL of the generated image when `response_format` is set to `url`, for
+    providers that support that parameter.
     """

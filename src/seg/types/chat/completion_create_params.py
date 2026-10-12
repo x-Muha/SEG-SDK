@@ -41,19 +41,19 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     messages: Required[Iterable[ChatCompletionMessageParam]]
     """A list of messages comprising the conversation so far.
 
-    Depending on the [model](https://developers.sovereigneg.com/api/docs/models) you use,
+    Depending on the [model](https://sovereigneg.com/dashboard/docs) you use,
     different message types (modalities) are supported, like
-    [text](https://developers.sovereigneg.com/api/docs/guides/text),
-    [images](https://developers.sovereigneg.com/api/docs/guides/images-vision), and
-    [audio](https://developers.sovereigneg.com/api/docs/guides/audio).
+    [text](https://sovereigneg.com/dashboard/docs),
+    [images](https://sovereigneg.com/dashboard/docs), and
+    [audio](https://sovereigneg.com/dashboard/docs).
     """
 
     model: Required[Union[str, ChatModel]]
-    """Model ID used to generate the response, like `gpt-6-astra` or `o3`.
+    """Model ID used to generate the response, like `llama-3.1-8b-instruct` or `claude-sonnet-4.5`.
 
     SEG offers a wide range of models with different capabilities, performance
     characteristics, and price points. Refer to the
-    [model guide](https://developers.sovereigneg.com/api/docs/models) to browse and
+    [model guide](https://sovereigneg.com/dashboard/docs) to browse and
     compare available models.
     """
 
@@ -61,7 +61,7 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     """Parameters for audio output.
 
     Required when audio output is requested with `modalities: ["audio"]`.
-    [Learn more](https://developers.sovereigneg.com/api/docs/guides/audio).
+    [Learn more](https://sovereigneg.com/dashboard/docs).
     """
 
     frequency_penalty: Optional[float]
@@ -116,7 +116,7 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     """
     An upper bound for the number of tokens that can be generated for a completion,
     including visible output tokens and
-    [reasoning tokens](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+    [reasoning tokens](https://sovereigneg.com/dashboard/docs).
     """
 
     max_tokens: Optional[int]
@@ -127,7 +127,7 @@ class CompletionCreateParamsBase(TypedDict, total=False):
 
     This value is now deprecated in favor of `max_completion_tokens`, and is not
     compatible with
-    [o-series models](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+    reasoning models.
     """
 
     metadata: Optional[Metadata]
@@ -147,8 +147,8 @@ class CompletionCreateParamsBase(TypedDict, total=False):
 
     `["text"]`
 
-    The `gpt-4o-audio-preview` model can also be used to
-    [generate audio](https://developers.sovereigneg.com/api/docs/guides/audio). To
+    Audio-capable models can also be used to
+    [generate audio](https://sovereigneg.com/dashboard/docs). To
     request that this model generate both text and audio responses, you can use:
 
     `["text", "audio"]`
@@ -167,14 +167,14 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     parallel_tool_calls: bool
     """
     Whether to enable
-    [parallel function calling](https://developers.sovereigneg.com/api/docs/guides/function-calling#parallel-function-calling)
+    [parallel function calling](https://sovereigneg.com/dashboard/docs)
     during tool use.
     """
 
     prediction: Optional[ChatCompletionPredictionContentParam]
     """
     Configuration for a
-    [Predicted Output](https://developers.sovereigneg.com/api/docs/guides/predicted-outputs),
+    [Predicted Output](https://sovereigneg.com/dashboard/docs),
     which can greatly improve response times when large parts of the model response
     are known ahead of time. This is most common when you are regenerating a file
     with only minor changes to most of the content.
@@ -191,20 +191,20 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     """
     Used by SEG to cache responses for similar requests to optimize your cache
     hit rates. Replaces the `user` field.
-    [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching).
+    [Learn more](https://sovereigneg.com/dashboard/docs).
     """
 
     prompt_cache_options: PromptCacheOptions
     """Options for prompt caching.
 
-    Supported for `gpt-5.6` and later models. By default, SEG automatically
+    Supported by providers that offer prompt caching. By default, SEG automatically
     chooses one implicit cache breakpoint. You can add explicit breakpoints to
     content blocks with `prompt_cache_breakpoint`. Each request can write up to four
     breakpoints. For cache matching, SEG considers up to the latest 80
     breakpoints in the conversation, without a content-block lookback limit. Set
     `mode` to `explicit` to disable the implicit breakpoint. The `ttl` defaults to
     `30m`, which is currently the only supported value. See the
-    [prompt caching guide](https://developers.sovereigneg.com/api/docs/guides/prompt-caching)
+    [prompt caching guide](https://sovereigneg.com/dashboard/docs)
     for current details.
     """
 
@@ -214,11 +214,10 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     The retention policy for the prompt cache. Set to `24h` to enable extended
     prompt caching, which keeps cached prefixes active for longer, up to a maximum
     of 24 hours.
-    [Learn more](https://developers.sovereigneg.com/api/docs/guides/prompt-caching#prompt-cache-retention).
+    [Learn more](https://sovereigneg.com/dashboard/docs).
     This field expresses a maximum retention policy, while
     `prompt_cache_options.ttl` expresses a minimum cache lifetime. The two fields
-    are independent and do not interact. For `gpt-5.5`, `gpt-5.5-pro`, and future
-    models, only `24h` is supported.
+    are independent and do not interact. Some models only support `24h`.
 
     For older models that support both `in_memory` and `24h`, the default depends on
     your organization's data retention policy:
@@ -235,7 +234,7 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     `xhigh`, and `max`. Reducing reasoning effort can result in faster responses and
     fewer tokens used on reasoning in a response. Not all reasoning models support
     every value. See the
-    [reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning) for
+    [reasoning guide](https://sovereigneg.com/dashboard/docs) for
     model-specific support.
     """
 
@@ -245,7 +244,7 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     Setting to `{ "type": "json_schema", "json_schema": {...} }` enables Structured
     Outputs which ensures the model will match your supplied JSON schema. Learn more
     in the
-    [Structured Outputs guide](https://developers.sovereigneg.com/api/docs/guides/structured-outputs).
+    [Structured Outputs guide](https://sovereigneg.com/dashboard/docs).
 
     Setting to `{ "type": "json_object" }` enables the older JSON mode, which
     ensures the message the model generates is valid JSON. Using `json_schema` is
@@ -259,7 +258,7 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     identifies each user, with a maximum length of 128 characters. We recommend
     hashing their username or email address, in order to avoid sending us any
     identifying information.
-    [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+    [Learn more](https://sovereigneg.com/dashboard/docs).
     """
 
     seed: Optional[int]
@@ -280,10 +279,10 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     - If set to 'default', then the request will be processed with the standard
       pricing and performance for the selected model.
     - If set to
-      '[flex](https://developers.sovereigneg.com/api/docs/guides/flex-processing)', then
+      '[flex](https://sovereigneg.com/dashboard/docs)', then
       the request will be processed with the Flex Processing service tier.
     - To opt-in to
-      [Fast mode](https://developers.sovereigneg.com/api/docs/guides/fast-mode) at the
+      [Fast mode](https://sovereigneg.com/dashboard/docs) at the
       request level, include the `service_tier=fast` or `service_tier=priority`
       parameter for Responses or Chat Completions. The response will show
       `service_tier=priority` regardless of if you specify `service_tier=fast` or
@@ -297,7 +296,7 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     """
 
     stop: Union[str, SequenceNotStr[str], None]
-    """Not supported with latest reasoning models `o3` and `o4-mini`.
+    """Not supported by some reasoning models.
 
     Up to 4 sequences where the API will stop generating further tokens. The
     returned text will not contain the stop sequence.
@@ -307,8 +306,8 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     """
     Whether or not to store the output of this chat completion request for use in
     our
-    [model distillation](https://developers.sovereigneg.com/api/docs/guides/supervised-fine-tuning#distilling-from-a-larger-model)
-    or [evals](https://developers.sovereigneg.com/api/docs/guides/evals) products.
+    [model distillation](https://sovereigneg.com/dashboard/docs)
+    or [evals](https://sovereigneg.com/dashboard/docs) products.
 
     Supports text and image inputs. Note: image inputs over 8MB will be dropped.
     """
@@ -341,9 +340,9 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     """A list of tools the model may call.
 
     You can provide either
-    [custom tools](https://developers.sovereigneg.com/api/docs/guides/function-calling#custom-tools)
+    [custom tools](https://sovereigneg.com/dashboard/docs)
     or
-    [function tools](https://developers.sovereigneg.com/api/docs/guides/function-calling).
+    [function tools](https://sovereigneg.com/dashboard/docs).
     """
 
     top_logprobs: Optional[int]
@@ -369,7 +368,7 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     Use `prompt_cache_key` instead to maintain caching optimizations. A stable
     identifier for your end-users. Used to boost cache hit rates by better bucketing
     similar requests and to help SEG detect and prevent abuse.
-    [Learn more](https://developers.sovereigneg.com/api/docs/guides/safety-best-practices#implement-safety-identifiers).
+    [Learn more](https://sovereigneg.com/dashboard/docs).
     """
 
     verbosity: Optional[Literal["low", "medium", "high"]]
@@ -384,7 +383,7 @@ class CompletionCreateParamsBase(TypedDict, total=False):
     """
     This tool searches the web for relevant results to use in a response. Learn more
     about the
-    [web search tool](https://developers.sovereigneg.com/api/docs/guides/tools-web-search).
+    [web search tool](https://sovereigneg.com/dashboard/docs).
     """
 
 
@@ -408,7 +407,7 @@ class Function(TypedDict, total=False):
     parameters: FunctionParameters
     """The parameters the functions accepts, described as a JSON Schema object.
 
-    See the [guide](https://developers.sovereigneg.com/api/docs/guides/function-calling)
+    See the [guide](https://sovereigneg.com/dashboard/docs)
     for examples, and the
     [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for
     documentation about the format.
@@ -443,10 +442,7 @@ class Moderation(TypedDict, total=False):
     """Configuration for running moderation on the request input and generated output."""
 
     model: Required[str]
-    """The moderation model to use for moderated completions, e.g.
-
-    'omni-moderation-latest'.
-    """
+    """The moderation model to use for moderated completions."""
 
     policy: Optional[ModerationPolicy]
     """The policy to apply to moderated response input and output."""
@@ -455,7 +451,7 @@ class Moderation(TypedDict, total=False):
 class PromptCacheOptions(TypedDict, total=False):
     """Options for prompt caching.
 
-    Supported for `gpt-5.6` and later models. By default, SEG automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints. For cache matching, SEG considers up to the latest 80 breakpoints in the conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the [prompt caching guide](https://developers.sovereigneg.com/api/docs/guides/prompt-caching) for current details.
+    Supported by providers that offer prompt caching. By default, SEG automatically chooses one implicit cache breakpoint. You can add explicit breakpoints to content blocks with `prompt_cache_breakpoint`. Each request can write up to four breakpoints. For cache matching, SEG considers up to the latest 80 breakpoints in the conversation, without a content-block lookback limit. Set `mode` to `explicit` to disable the implicit breakpoint. The `ttl` defaults to `30m`, which is currently the only supported value. See the [prompt caching guide](https://sovereigneg.com/dashboard/docs) for current details.
     """
 
     mode: Literal["implicit", "explicit"]
@@ -514,7 +510,7 @@ class WebSearchOptionsUserLocation(TypedDict, total=False):
 class WebSearchOptions(TypedDict, total=False):
     """
     This tool searches the web for relevant results to use in a response.
-    Learn more about the [web search tool](https://developers.sovereigneg.com/api/docs/guides/tools-web-search).
+    Learn more about the [web search tool](https://sovereigneg.com/dashboard/docs).
     """
 
     search_context_size: Literal["low", "medium", "high"]
@@ -534,9 +530,9 @@ class CompletionCreateParamsNonStreaming(CompletionCreateParamsBase, total=False
     generated using
     [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).
     See the
-    [Streaming section below](https://developers.sovereigneg.com/api/reference/resources/chat/subresources/completions/streaming-events)
+    [Streaming section below](https://sovereigneg.com/dashboard/docs)
     for more information, along with the
-    [streaming responses](https://developers.sovereigneg.com/api/docs/guides/streaming-responses)
+    [streaming responses](https://sovereigneg.com/dashboard/docs)
     guide for more information on how to handle the streaming events.
     """
 
@@ -548,9 +544,9 @@ class CompletionCreateParamsStreaming(CompletionCreateParamsBase):
     generated using
     [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).
     See the
-    [Streaming section below](https://developers.sovereigneg.com/api/reference/resources/chat/subresources/completions/streaming-events)
+    [Streaming section below](https://sovereigneg.com/dashboard/docs)
     for more information, along with the
-    [streaming responses](https://developers.sovereigneg.com/api/docs/guides/streaming-responses)
+    [streaming responses](https://sovereigneg.com/dashboard/docs)
     guide for more information on how to handle the streaming events.
     """
 

@@ -99,7 +99,6 @@ if not _t.TYPE_CHECKING:
 
 from .lib import pydantic_function_tool as pydantic_function_tool
 from .version import VERSION as VERSION
-from .lib._old_api import *
 
 _setup_logging()
 

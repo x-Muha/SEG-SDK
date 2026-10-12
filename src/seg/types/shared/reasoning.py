@@ -10,14 +10,14 @@ __all__ = ["Reasoning"]
 class Reasoning(BaseModel):
     """
     Configuration options for
-    [reasoning models](https://developers.sovereigneg.com/api/docs/guides/reasoning).
+    [reasoning models](https://sovereigneg.com/dashboard/docs).
     """
 
     context: Optional[Literal["auto", "current_turn", "all_turns"]] = None
     """
     Controls which reasoning items are rendered back to the model on later turns. If
-    omitted or set to `auto`, the model determines the context mode. The `gpt-5.6`
-    model family defaults to `all_turns`; earlier models default to `current_turn`.
+    omitted or set to `auto`, the model determines the context mode. Defaults depend
+    on the provider and model.
 
     When returned on a response, this is the effective reasoning context mode used
     for the response.
@@ -30,7 +30,7 @@ class Reasoning(BaseModel):
     `xhigh`, and `max`. Reducing reasoning effort can result in faster responses and
     fewer tokens used on reasoning in a response. Not all reasoning models support
     every value. See the
-    [reasoning guide](https://developers.sovereigneg.com/api/docs/guides/reasoning) for
+    [reasoning guide](https://sovereigneg.com/dashboard/docs) for
     model-specific support.
     """
 
@@ -54,6 +54,5 @@ class Reasoning(BaseModel):
     This can be useful for debugging and understanding the model's reasoning
     process. One of `auto`, `concise`, or `detailed`.
 
-    `concise` is supported for `computer-use-preview` models and all reasoning
-    models after `gpt-5`.
+    Support for `concise` depends on the provider and model.
     """

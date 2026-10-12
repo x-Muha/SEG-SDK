@@ -82,10 +82,14 @@ recommend checking a reliable weather website or app like the Weather Channel or
         completion_tokens_details=CompletionTokensDetails(
             accepted_prediction_tokens=None,
             audio_tokens=None,
+            image_tokens=None,
             reasoning_tokens=0,
             rejected_prediction_tokens=None,
             text_tokens=None
         ),
+        cost=None,
+        cost_details=None,
+        is_byok=None,
         prompt_tokens=14,
         prompt_tokens_details=None,
         total_tokens=51
@@ -154,10 +158,14 @@ ParsedChatCompletion(
         completion_tokens_details=CompletionTokensDetails(
             accepted_prediction_tokens=None,
             audio_tokens=None,
+            image_tokens=None,
             reasoning_tokens=0,
             rejected_prediction_tokens=None,
             text_tokens=None
         ),
+        cost=None,
+        cost_details=None,
+        is_byok=None,
         prompt_tokens=79,
         prompt_tokens_details=None,
         total_tokens=93
@@ -228,10 +236,14 @@ ParsedChatCompletion(
         completion_tokens_details=CompletionTokensDetails(
             accepted_prediction_tokens=None,
             audio_tokens=None,
+            image_tokens=None,
             reasoning_tokens=0,
             rejected_prediction_tokens=None,
             text_tokens=None
         ),
+        cost=None,
+        cost_details=None,
+        is_byok=None,
         prompt_tokens=88,
         prompt_tokens_details=None,
         total_tokens=102
@@ -437,10 +449,14 @@ ParsedChatCompletion(
         completion_tokens_details=CompletionTokensDetails(
             accepted_prediction_tokens=None,
             audio_tokens=None,
+            image_tokens=None,
             reasoning_tokens=0,
             rejected_prediction_tokens=None,
             text_tokens=None
         ),
+        cost=None,
+        cost_details=None,
+        is_byok=None,
         prompt_tokens=92,
         prompt_tokens_details=None,
         total_tokens=109
@@ -909,10 +925,14 @@ ParsedChatCompletion(
         completion_tokens_details=CompletionTokensDetails(
             accepted_prediction_tokens=None,
             audio_tokens=None,
+            image_tokens=None,
             reasoning_tokens=0,
             rejected_prediction_tokens=None,
             text_tokens=None
         ),
+        cost=None,
+        cost_details=None,
+        is_byok=None,
         prompt_tokens=79,
         prompt_tokens_details=None,
         total_tokens=93
@@ -989,10 +1009,14 @@ ParsedChatCompletion(
         completion_tokens_details=CompletionTokensDetails(
             accepted_prediction_tokens=None,
             audio_tokens=None,
+            image_tokens=None,
             reasoning_tokens=0,
             rejected_prediction_tokens=None,
             text_tokens=None
         ),
+        cost=None,
+        cost_details=None,
+        is_byok=None,
         prompt_tokens=79,
         prompt_tokens_details=None,
         total_tokens=93
