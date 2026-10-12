@@ -1,13 +1,15 @@
-# workflow for re-running publishing to PyPI in case it fails for some reason
-# you can run this workflow by navigating to https://www.github.com/openai/openai-python/actions/workflows/publish-pypi.yml
+# Publishes `seg-sdk` to PyPI with Trusted Publishing when a GitHub release is
+# published (or manually from the Actions tab). Configure the PyPI project
+# `seg-sdk` to trust this repository's `publish` environment first.
 name: Publish PyPI
 on:
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
   build:
     name: build
-    if: github.ref == 'refs/heads/main' && github.repository == 'openai/openai-python'
     runs-on: ubuntu-latest
     # Build distributions without OIDC access so package build code cannot mint
     # a PyPI publishing token. The publish job handles only the upload.
@@ -22,7 +24,7 @@ jobs:
       - name: Set up uv
         uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
-          version: '0.12.5'
+          version: '0.13.0'
           enable-cache: false
 
       - name: Build package
@@ -40,7 +42,6 @@ jobs:
   publish:
     name: publish
     needs: build
-    if: github.ref == 'refs/heads/main' && github.repository == 'openai/openai-python'
     runs-on: ubuntu-latest
     environment: publish
     # PyPI Trusted Publishing requires id-token: write. Keep it scoped to this

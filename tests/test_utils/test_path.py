@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from openai._utils._path import path_template
+from seg._utils._path import path_template
 
 
 @pytest.mark.parametrize(

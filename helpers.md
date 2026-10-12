@@ -1,6 +1,6 @@
 # Structured Outputs Parsing Helpers
 
-The OpenAI API supports extracting JSON from the model with the `response_format` request param, for more details on the API, see [this guide](https://platform.openai.com/docs/guides/structured-outputs).
+The SEG API supports extracting JSON from the model with the `response_format` request param, for more details on the API, see [this guide](https://sovereigneg.com/dashboard/docs).
 
 The SDK provides a `client.chat.completions.parse()` method which is a wrapper over the `client.chat.completions.create()` that
 provides richer integrations with Python specific types & returns a `ParsedChatCompletion` object, which is a subclass of the standard `ChatCompletion` class.
@@ -13,19 +13,22 @@ into a JSON schema, send it to the API and parse the response content back into 
 ```py
 from typing import List
 from pydantic import BaseModel
-from openai import OpenAI
+from seg import SEG
+
 
 class Step(BaseModel):
     explanation: str
     output: str
 
+
 class MathResponse(BaseModel):
     steps: List[Step]
     final_answer: str
 
-client = OpenAI()
+
+client = SEG()
 completion = client.chat.completions.parse(
-    model="gpt-4o-2024-08-06",
+    model="Qwen/Qwen3-0.6B",
     messages=[
         {"role": "system", "content": "You are a helpful math tutor."},
         {"role": "user", "content": "solve 8x + 31 = 2"},
@@ -41,30 +44,11 @@ else:
     print(message.refusal)
 ```
 
-## Parsing Responses API output
-
-Use `client.responses.parse(..., text_format=YourModel)` to parse Responses API
-output into a Pydantic model. The same parsing rules apply to
-`client.responses.stream(..., text_format=YourModel)` and their async equivalents.
-
-- Messages with `phase="final_answer"` are parsed. Messages with no phase or a
-  null phase retain the legacy behavior and are also parsed.
-- Commentary and other explicit phases keep their original text and metadata,
-  with `parsed=None`, even when the text happens to match the schema.
-- `output_parsed` returns the first parsed result, or `None` when there is none.
-  A refusal does not cause commentary to be used as a fallback answer.
-- Invalid JSON or schema-invalid text in an eligible message still raises a
-  validation error. Missing phases are not inferred from the text or model name.
-
-`output_text` continues to concatenate all output text, including commentary.
-Use `output_parsed` for the structured result and retain `output` when replaying
-messages so their phases are preserved.
-
 ## Auto-parsing function tool calls
 
 The `.parse()` method will also automatically parse `function` tool calls if:
 
-- You use the `openai.pydantic_function_tool()` helper method
+- You use the `seg.pydantic_function_tool()` helper method
 - You mark your tool schema with `"strict": True`
 
 For example:
@@ -73,12 +57,14 @@ For example:
 from enum import Enum
 from typing import List, Union
 from pydantic import BaseModel
-import openai
+import seg
+
 
 class Table(str, Enum):
     orders = "orders"
     customers = "customers"
     products = "products"
+
 
 class Column(str, Enum):
     id = "id"
@@ -89,6 +75,7 @@ class Column(str, Enum):
     ordered_at = "ordered_at"
     canceled_at = "canceled_at"
 
+
 class Operator(str, Enum):
     eq = "="
     gt = ">"
@@ -97,17 +84,21 @@ class Operator(str, Enum):
     ge = ">="
     ne = "!="
 
+
 class OrderBy(str, Enum):
     asc = "asc"
     desc = "desc"
 
+
 class DynamicValue(BaseModel):
     column_name: str
+
 
 class Condition(BaseModel):
     column: str
     operator: Operator
     value: Union[str, int, DynamicValue]
+
 
 class Query(BaseModel):
     table_name: Table
@@ -115,9 +106,10 @@ class Query(BaseModel):
     conditions: List[Condition]
     order_by: OrderBy
 
-client = openai.OpenAI()
+
+client = seg.SEG()
 completion = client.chat.completions.parse(
-    model="gpt-4o-2024-08-06",
+    model="Qwen/Qwen3-0.6B",
     messages=[
         {
             "role": "system",
@@ -129,7 +121,7 @@ completion = client.chat.completions.parse(
         },
     ],
     tools=[
-        openai.pydantic_function_tool(Query),
+        seg.pydantic_function_tool(Query),
     ],
 )
 
@@ -148,7 +140,7 @@ The `chat.completions.parse()` method imposes some additional restrictions on it
 
 # Streaming Helpers
 
-OpenAI supports streaming responses when interacting with the [Chat Completion](#chat-completions-api) & [Assistant](#assistant-streaming-api) APIs.
+SEG supports streaming responses when interacting with the [Chat Completion](#chat-completions-api) API.
 
 ## Chat Completions API
 
@@ -159,17 +151,17 @@ It also supports all aforementioned [parsing helpers](#structured-outputs-parsin
 Unlike `.create(stream=True)`, the `.stream()` method requires usage within a context manager to prevent accidental leakage of the response:
 
 ```py
-from openai import AsyncOpenAI
+from seg import AsyncSEG
 
-client = AsyncOpenAI()
+client = AsyncSEG()
 
 async with client.chat.completions.stream(
-    model='gpt-4o-2024-08-06',
+    model="Qwen/Qwen3-0.6B",
     messages=[...],
 ) as stream:
     async for event in stream:
-        if event.type == 'content.delta':
-            print(event.delta, flush=True, end='')
+        if event.type == "content.delta":
+            print(event.delta, flush=True, end="")
 ```
 
 When the context manager is entered, a `ChatCompletionStream` / `AsyncChatCompletionStream` instance is returned which, like `.create(stream=True)` is an iterator in the sync client and an async iterator in the async client. The full list of events that are yielded by the iterator are outlined [below](#chat-completions-events).
@@ -242,11 +234,11 @@ Emitted when a function tool call's arguments are complete.
 - `name`: The name of the function being called
 - `index`: The index of the tool call
 - `arguments`: The full raw JSON string of arguments
-- `parsed_arguments`: The fully parsed arguments object. If you used `openai.pydantic_function_tool()` this will be an instance of the given model.
+- `parsed_arguments`: The fully parsed arguments object. If you used `seg.pydantic_function_tool()` this will be an instance of the given model.
 
 #### LogprobsContentDeltaEvent
 
-Emitted when a chunk contains new content [log probabilities](https://cookbook.openai.com/examples/using_logprobs).
+Emitted when a chunk contains new content [log probabilities](https://cookbook.sovereigneg.com/examples/using_logprobs).
 
 - `type`: `"logprobs.content.delta"`
 - `content`: A list of the new log probabilities received in this chunk
@@ -254,14 +246,14 @@ Emitted when a chunk contains new content [log probabilities](https://cookbook.o
 
 #### LogprobsContentDoneEvent
 
-Emitted when all content [log probabilities](https://cookbook.openai.com/examples/using_logprobs) have been received.
+Emitted when all content [log probabilities](https://cookbook.sovereigneg.com/examples/using_logprobs) have been received.
 
 - `type`: `"logprobs.content.done"`
 - `content`: The full list of token log probabilities for the content
 
 #### LogprobsRefusalDeltaEvent
 
-Emitted when a chunk contains new refusal [log probabilities](https://cookbook.openai.com/examples/using_logprobs).
+Emitted when a chunk contains new refusal [log probabilities](https://cookbook.sovereigneg.com/examples/using_logprobs).
 
 - `type`: `"logprobs.refusal.delta"`
 - `refusal`: A list of the new log probabilities received in this chunk
@@ -269,7 +261,7 @@ Emitted when a chunk contains new refusal [log probabilities](https://cookbook.o
 
 #### LogprobsRefusalDoneEvent
 
-Emitted when all refusal [log probabilities](https://cookbook.openai.com/examples/using_logprobs) have been received.
+Emitted when all refusal [log probabilities](https://cookbook.sovereigneg.com/examples/using_logprobs) have been received.
 
 - `type`: `"logprobs.refusal.done"`
 - `refusal`: The full list of token log probabilities for the refusal
@@ -300,439 +292,3 @@ async with client.chat.completions.stream(...) as stream:
     # stream is now finished
 ```
 
-## Assistant Streaming API
-
-OpenAI supports streaming responses from Assistants. The SDK provides convenience wrappers around the API
-so you can subscribe to the types of events you are interested in as well as receive accumulated responses.
-
-More information can be found in the documentation: [Assistant Streaming](https://platform.openai.com/docs/assistants/overview?lang=python)
-
-#### An example of creating a run and subscribing to some events
-
-You can subscribe to events by creating an event handler class and overloading the relevant event handlers.
-
-```python
-from typing_extensions import override
-from openai import AssistantEventHandler, OpenAI
-from openai.types.beta.threads import Text, TextDelta
-from openai.types.beta.threads.runs import ToolCall, ToolCallDelta
-
-client = openai.OpenAI()
-
-# First, we create a EventHandler class to define
-# how we want to handle the events in the response stream.
-
-class EventHandler(AssistantEventHandler):
-  @override
-  def on_text_created(self, text: Text) -> None:
-    print(f"\nassistant > ", end="", flush=True)
-
-  @override
-  def on_text_delta(self, delta: TextDelta, snapshot: Text):
-    print(delta.value, end="", flush=True)
-
-  @override
-  def on_tool_call_created(self, tool_call: ToolCall):
-    print(f"\nassistant > {tool_call.type}\n", flush=True)
-
-  @override
-  def on_tool_call_delta(self, delta: ToolCallDelta, snapshot: ToolCall):
-    if delta.type == "code_interpreter" and delta.code_interpreter:
-      if delta.code_interpreter.input:
-        print(delta.code_interpreter.input, end="", flush=True)
-      if delta.code_interpreter.outputs:
-        print(f"\n\noutput >", flush=True)
-        for output in delta.code_interpreter.outputs:
-          if output.type == "logs":
-            print(f"\n{output.logs}", flush=True)
-
-# Then, we use the `stream` SDK helper
-# with the `EventHandler` class to create the Run
-# and stream the response.
-
-with client.beta.threads.runs.stream(
-  thread_id="thread_id",
-  assistant_id="assistant_id",
-  event_handler=EventHandler(),
-) as stream:
-  stream.until_done()
-```
-
-#### An example of iterating over events
-
-You can also iterate over all the streamed events.
-
-```python
-with client.beta.threads.runs.stream(
-  thread_id=thread.id,
-  assistant_id=assistant.id
-) as stream:
-    for event in stream:
-        # Print the text from text delta events
-        if event.event == "thread.message.delta" and event.data.delta.content:
-            print(event.data.delta.content[0].text)
-```
-
-#### An example of iterating over text
-
-You can also iterate over just the text deltas received
-
-```python
-with client.beta.threads.runs.stream(
-  thread_id=thread.id,
-  assistant_id=assistant.id
-) as stream:
-    for text in stream.text_deltas:
-        print(text)
-```
-
-### Creating Streams
-
-There are three helper methods for creating streams:
-
-```python
-client.beta.threads.runs.stream()
-```
-
-This method can be used to start and stream the response to an existing run with an associated thread
-that is already populated with messages.
-
-```python
-client.beta.threads.create_and_run_stream()
-```
-
-This method can be used to add a message to a thread, start a run and then stream the response.
-
-```python
-client.beta.threads.runs.submit_tool_outputs_stream()
-```
-
-This method can be used to submit a tool output to a run waiting on the output and start a stream.
-
-### Assistant Events
-
-The assistant API provides events you can subscribe to for the following events.
-
-```python
-def on_event(self, event: AssistantStreamEvent)
-```
-
-This allows you to subscribe to all the possible raw events sent by the OpenAI streaming API.
-In many cases it will be more convenient to subscribe to a more specific set of events for your use case.
-
-More information on the types of events can be found here: [Events](https://platform.openai.com/docs/api-reference/assistants-streaming/events)
-
-```python
-def on_run_step_created(self, run_step: RunStep)
-def on_run_step_delta(self, delta: RunStepDelta, snapshot: RunStep)
-def on_run_step_done(self, run_step: RunStep)
-```
-
-These events allow you to subscribe to the creation, delta and completion of a RunStep.
-
-For more information on how Runs and RunSteps work see the documentation [Runs and RunSteps](https://platform.openai.com/docs/assistants/how-it-works/runs-and-run-steps)
-
-```python
-def on_message_created(self, message: Message)
-def on_message_delta(self, delta: MessageDelta, snapshot: Message)
-def on_message_done(self, message: Message)
-```
-
-This allows you to subscribe to Message creation, delta and completion events. Messages can contain
-different types of content that can be sent from a model (and events are available for specific content types).
-For convenience, the delta event includes both the incremental update and an accumulated snapshot of the content.
-
-More information on messages can be found
-on in the documentation page [Message](https://platform.openai.com/docs/api-reference/messages/object).
-
-```python
-def on_text_created(self, text: Text)
-def on_text_delta(self, delta: TextDelta, snapshot: Text)
-def on_text_done(self, text: Text)
-```
-
-These events allow you to subscribe to the creation, delta and completion of a Text content (a specific type of message).
-For convenience, the delta event includes both the incremental update and an accumulated snapshot of the content.
-
-```python
-def on_image_file_done(self, image_file: ImageFile)
-```
-
-Image files are not sent incrementally so an event is provided for when a image file is available.
-
-```python
-def on_tool_call_created(self, tool_call: ToolCall)
-def on_tool_call_delta(self, delta: ToolCallDelta, snapshot: ToolCall)
-def on_tool_call_done(self, tool_call: ToolCall)
-```
-
-These events allow you to subscribe to events for the creation, delta and completion of a ToolCall.
-
-More information on tools can be found here [Tools](https://platform.openai.com/docs/assistants/tools)
-
-```python
-def on_end(self)
-```
-
-The last event send when a stream ends.
-
-```python
-def on_timeout(self)
-```
-
-This event is triggered if the request times out.
-
-```python
-def on_exception(self, exception: Exception)
-```
-
-This event is triggered if an exception occurs during streaming.
-
-### Assistant Methods
-
-The assistant streaming object also provides a few methods for convenience:
-
-```python
-def current_event() -> AssistantStreamEvent | None
-def current_run() -> Run | None
-def current_message_snapshot() -> Message | None
-def current_run_step_snapshot() -> RunStep | None
-```
-
-These methods are provided to allow you to access additional context from within event handlers. In many cases
-the handlers should include all the information you need for processing, but if additional context is required it
-can be accessed.
-
-Note: There is not always a relevant context in certain situations (these will be `None` in those cases).
-
-```python
-def get_final_run(self) -> Run
-def get_final_run_steps(self) -> List[RunStep]
-def get_final_messages(self) -> List[Message]
-```
-
-These methods are provided for convenience to collect information at the end of a stream. Calling these events
-will trigger consumption of the stream until completion and then return the relevant accumulated objects.
-
-# Polling Helpers
-
-When interacting with the API some actions such as starting a Run and adding files to vector stores are asynchronous and take time to complete.
-The SDK includes helper functions which will poll the status until it reaches a terminal state and then return the resulting object.
-If an API method results in an action which could benefit from polling there will be a corresponding version of the
-method ending in `_and_poll`.
-
-All methods also allow you to set the polling frequency, how often the API is checked for an update, via a function argument (`poll_interval_ms`).
-
-The polling methods are:
-
-```python
-client.beta.threads.create_and_run_poll(...)
-client.beta.threads.runs.create_and_poll(...)
-client.beta.threads.runs.submit_tool_outputs_and_poll(...)
-client.vector_stores.files.upload_and_poll(...)
-client.vector_stores.files.create_and_poll(...)
-client.vector_stores.file_batches.create_and_poll(...)
-client.vector_stores.file_batches.upload_and_poll(...)
-client.videos.create_and_poll(...)
-```
-
-# Beta Agents turn results
-
-Both streamed session creation and the one-turn session helper can collect the final
-answer. Call `get_final_result()` directly, or enable `with_result_collection()`
-before iterating to display progress. Registered tool handlers run while either stream drains.
-
-```python
-with client.beta.agents.sessions.create(
-    agent={"model": MODEL},
-    environment={"type": "none"},
-    input="Explain this policy.",
-    stream=True,
-) as stream:
-    result = stream.get_final_result()
-
-print(result.output_text)
-
-with client.beta.agents.sessions.stream(
-    result.session_id,
-    input="Give me an example.",
-    tool_handlers=handlers,
-).with_result_collection() as stream:
-    for event in stream:
-        show_progress(event)
-    followup = stream.get_final_result()
-
-print(followup.output_text)
-```
-
-With `AsyncOpenAI`, await creation, use `async with` / `async for`, and await
-`get_final_result()`. The result exposes `output_text`, `turn`, final `messages`,
-`session_id`, and `turn_id`. Collection raises `AgentTurnResultError` when a complete
-successful answer cannot be established.
-
-## Deferred typed Responses tools
-
-Use `openai.pydantic_responses_function_tool()` for a flat Responses definition
-that retains Pydantic argument parsing in both `responses.parse()` and
-`responses.stream()`. Enable deferred loading alongside hosted tool search:
-
-```python
-tool = openai.pydantic_responses_function_tool(LookupItem, defer_loading=True)
-response = client.responses.parse(
-    model=MODEL, input="Find catalog item A123.",
-    tools=[{"type": "tool_search"}, tool],
-)
-for item in response.output:
-    if item.type == "function_call":
-        arguments = item.parsed_arguments  # LookupItem
-```
-
-The existing `pydantic_function_tool()` remains available for Chat Completions
-and its Responses compatibility path. The API validates tool-search configuration.
-
-## Typed beta Agents tools
-
-Bind an annotated function or bound method once, then reuse its definition and local handler:
-
-```py
-from openai.lib.beta.agents import function_tool
-
-@function_tool(name="lookup_item", description="Look up a catalog item.")
-def lookup(item_id: str) -> dict[str, str]:
-    return {"item_id": item_id, "name": "Notebook"}
-
-with client.beta.agents.sessions.create(
-    agent={"model": MODEL, "tools": [lookup.definition]},
-    environment={"type": "none"}, input="Find catalog item A123.",
-    stream=True, tool_handlers={lookup.name: lookup},
-) as stream:
-    print(stream.get_final_result().output_text)
-```
-
-For an existing Pydantic argument model, use an explicit binding:
-
-```py
-from pydantic import BaseModel
-from openai.lib.beta.agents import pydantic_function_tool
-
-class LookupArguments(BaseModel):
-    item_id: str
-
-lookup = pydantic_function_tool(
-    LookupArguments, name="lookup_item", handler=catalog.lookup,
-)
-# catalog.lookup receives a validated LookupArguments instance.
-```
-
-Callbacks run after their call event is yielded. They can be async with `AsyncOpenAI`.
-The same `tool_handlers` mapping works with `sessions.stream()` for follow-up turns;
-creation requires `stream=True`. Existing dictionary handlers still work.
-
-For hosted tool search, set `defer_loading=True` on the Agents decorator,
-`pydantic_function_tool()`, or `FunctionTool` constructor. Register the same
-handler as usual:
-
-```python
-@function_tool(defer_loading=True)
-def lookup_item(item_id: str) -> str:
-    """Look up a catalog item."""
-    return catalog.lookup(item_id)
-
-tools = [{"type": "tool_search"}, lookup_item.definition]
-handlers = {lookup_item.name: lookup_item}
-```
-
-### Observing local tool failures
-
-Use `on_tool_error` to log or monitor failures in argument validation, handler
-execution, or output serialization. The callback receives an `AgentToolError`
-from `openai.lib.beta.agents`; its original exception stays local. The model
-still receives the generic tool failure, and the SDK does not log automatically.
-Exception messages and tracebacks may contain sensitive data; apply your
-application’s redaction policy before logging them.
-
-```python
-def report_tool_error(failure):
-    logger.error(
-        "Tool %s failed during %s (call %s)",
-        failure.tool_name, failure.stage, failure.call_id,
-    )
-
-with client.beta.agents.sessions.stream(
-    SESSION_ID, input="Find catalog item A123.", tool_handlers=handlers,
-    on_tool_error=report_tool_error,
-) as stream:
-    stream.until_done()
-```
-
-`AsyncOpenAI` also accepts an async observer. Ordinary observer exceptions are
-ignored so the original tool failure can still be submitted; cancellation is
-not suppressed. Submission errors propagate normally without invoking this callback.
-
-### Typed Agents output (beta)
-
-Pass a Pydantic model (or a Pydantic v2 dataclass) to generate the Agents output
-schema and parse the completed answer. Schemas use the same normalization as
-Responses; the API validates which schema features it supports.
-
-```python
-from pydantic import BaseModel
-
-class Report(BaseModel):
-    summary: str
-    findings: list[str]
-
-with client.beta.agents.sessions.create(
-    agent={"model": MODEL}, environment={"type": "none"},
-    input="Summarize the findings.", stream=True, output_type=Report,
-) as stream:
-    result = stream.get_final_result()
-print(result.output_parsed)
-```
-
-For a session already configured with that schema, use
-`sessions.stream(session_id, input="Update the report.", output_type=Report)`.
-This only selects the local parser; it does not change the session's schema.
-`output_parsed` exposes the first parsed final text part; every final text part is validated.
-`result.parse(Report)` parses an existing raw result. `AgentOutputParseError.result`
-retains the completed raw answer if validation fails. With `AsyncOpenAI`, await
-creation and the result getter, and use `async with`.
-
-### Stage files and download a turn artifact
-
-```python
-from pathlib import Path
-
-prepared = client.beta.agents.environments.files.prepare({
-    "/workspace/source.pdf": Path("source.pdf"),
-})
-session = client.beta.agents.sessions.create(
-    agent={"model": MODEL},
-    environment={"type": "openai_hosted", "files": prepared.files},
-)
-with client.beta.agents.sessions.stream(
-    session.id, input="Read source.pdf and write /workspace/outputs/report.md."
-) as stream:
-    result = stream.get_final_result()
-
-artifacts = client.beta.agents.sessions.artifacts.for_result(result)
-
-# Read in memory, or stream to an application-owned local path.
-report_bytes = artifacts.content("/workspace/outputs/report.md").content
-artifact = artifacts.download(
-    "/workspace/outputs/report.md", to=Path("downloaded-report.md")
-)
-```
-
-Use `prepare_directory("docs", destination="/workspace/docs", include=["**/*.md"])`
-for a selected directory snapshot, or `files.upload(environment_id, file=Path(...),
-path="/workspace/source.pdf")` to stage a file in an existing environment.
-Directory selection follows `Path.glob` semantics, including skipping unreadable directories.
-Uploads remain caller-owned: use `prepared.uploaded_file_ids` with the ordinary
-Files API when ready to delete them. Preparation errors expose partial uploads
-through `error.prepared`. A batch of multiple uploads cannot share one explicit
-`Idempotency-Key`.
-
-Local path/directory uploads are intended for static application-owned files and
-stable directories. They do not sandbox untrusted path selection or hostile local
-filesystem writers. With `AsyncOpenAI`, await preparation, staging, and artifact downloads.

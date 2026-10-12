@@ -15,13 +15,13 @@ from inline_snapshot import (
     get_snapshot_value,  # pyright: ignore[reportUnknownVariableType]
 )
 
-import openai
-from openai import OpenAI, AsyncOpenAI
+import seg
+from seg import SEG, AsyncSEG
+from seg._utils import consume_sync_iterator, assert_signatures_in_sync
+from seg._compat import model_copy, model_parse
 from tests.respx2 import MockRouter
-from openai._utils import consume_sync_iterator, assert_signatures_in_sync
-from openai._compat import model_copy, model_parse
-from openai.types.chat import ChatCompletionChunk
-from openai.lib.streaming.chat import (
+from seg.types.chat import ChatCompletionChunk
+from seg.lib.streaming.chat import (
     ContentDoneEvent,
     ChatCompletionStream,
     ChatCompletionStreamEvent,
@@ -29,7 +29,7 @@ from openai.lib.streaming.chat import (
     ChatCompletionStreamManager,
     ParsedChatCompletionSnapshot,
 )
-from openai.lib._parsing._completions import ResponseFormatT
+from seg.lib._parsing._completions import ResponseFormatT
 
 from ..utils import print_obj
 from ...conftest import base_url
@@ -40,11 +40,11 @@ _T = TypeVar("_T")
 #
 # you can update them with
 #
-# `OPENAI_LIVE=1 pytest --inline-snapshot=fix -p no:xdist -o addopts=""`
+# `SEG_LIVE=1 pytest --inline-snapshot=fix -p no:xdist -o addopts=""`
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_nothing(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_nothing(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     listener = _make_stream_snapshot_request(
         lambda c: c.chat.completions.stream(
             model="gpt-4o-2024-08-06",
@@ -95,7 +95,7 @@ checking a reliable weather website or a weather app.",
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_pydantic_model(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_pydantic_model(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     class Location(BaseModel):
         city: str
         temperature: float
@@ -195,7 +195,7 @@ ContentDoneEvent(
 
 @pytest.mark.respx2(base_url=base_url)
 def test_parse_pydantic_model_multiple_choices(
-    client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
+    client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     class Location(BaseModel):
         city: str
@@ -374,13 +374,13 @@ def test_parse_pydantic_model_multiple_choices(
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_max_tokens_reached(client: OpenAI, respx2_mock: MockRouter) -> None:
+def test_parse_max_tokens_reached(client: SEG, respx2_mock: MockRouter) -> None:
     class Location(BaseModel):
         city: str
         temperature: float
         units: Literal["c", "f"]
 
-    with pytest.raises(openai.LengthFinishReasonError):
+    with pytest.raises(seg.LengthFinishReasonError):
         _make_stream_snapshot_request(
             lambda c: c.chat.completions.stream(
                 model="gpt-4o-2024-08-06",
@@ -400,7 +400,7 @@ def test_parse_max_tokens_reached(client: OpenAI, respx2_mock: MockRouter) -> No
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_pydantic_model_refusal(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_pydantic_model_refusal(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     class Location(BaseModel):
         city: str
         temperature: float
@@ -450,7 +450,7 @@ RefusalDoneEvent(refusal="I'm sorry, I can't assist with that request.", type='r
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_content_logprobs_events(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_content_logprobs_events(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     listener = _make_stream_snapshot_request(
         lambda c: c.chat.completions.stream(
             model="gpt-4o-2024-08-06",
@@ -524,7 +524,7 @@ def test_content_logprobs_events(client: OpenAI, respx2_mock: MockRouter, monkey
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_refusal_logprobs_events(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_refusal_logprobs_events(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     class Location(BaseModel):
         city: str
         temperature: float
@@ -636,7 +636,7 @@ def test_refusal_logprobs_events(client: OpenAI, respx2_mock: MockRouter, monkey
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_pydantic_tool(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_pydantic_tool(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     class GetWeatherArgs(BaseModel):
         city: str
         country: str
@@ -652,7 +652,7 @@ def test_parse_pydantic_tool(client: OpenAI, respx2_mock: MockRouter, monkeypatc
                 },
             ],
             tools=[
-                openai.pydantic_function_tool(GetWeatherArgs),
+                seg.pydantic_function_tool(GetWeatherArgs),
             ],
         ),
         content_snapshot=snapshot(external("c6aa7e397b71*.bin")),
@@ -728,9 +728,7 @@ def test_parse_pydantic_tool(client: OpenAI, respx2_mock: MockRouter, monkeypatc
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_multiple_pydantic_tools(
-    client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_parse_multiple_pydantic_tools(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     class GetWeatherArgs(BaseModel):
         """Get the temperature for the given country/city combo"""
 
@@ -756,8 +754,8 @@ def test_parse_multiple_pydantic_tools(
                 },
             ],
             tools=[
-                openai.pydantic_function_tool(GetWeatherArgs),
-                openai.pydantic_function_tool(
+                seg.pydantic_function_tool(GetWeatherArgs),
+                seg.pydantic_function_tool(
                     GetStockPrice, name="get_stock_price", description="Fetch the latest price for a given ticker"
                 ),
             ],
@@ -839,7 +837,7 @@ def test_parse_multiple_pydantic_tools(
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_strict_tools(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_strict_tools(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     listener = _make_stream_snapshot_request(
         lambda c: c.chat.completions.stream(
             model="gpt-4o-2024-08-06",
@@ -911,7 +909,7 @@ def test_parse_strict_tools(client: OpenAI, respx2_mock: MockRouter, monkeypatch
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_non_pydantic_response_format(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_non_pydantic_response_format(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     listener = _make_stream_snapshot_request(
         lambda c: c.chat.completions.stream(
             model="gpt-4o-2024-08-06",
@@ -958,7 +956,7 @@ def test_non_pydantic_response_format(client: OpenAI, respx2_mock: MockRouter, m
 
 @pytest.mark.respx2(base_url=base_url)
 def test_allows_non_strict_tools_but_no_parsing(
-    client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
+    client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     listener = _make_stream_snapshot_request(
         lambda c: c.chat.completions.stream(
@@ -1061,10 +1059,10 @@ def test_stream_obfuscation_stays_on_raw_chunks(padding: tuple[str | None, str |
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_chat_completion_state_helper(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_chat_completion_state_helper(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     state = ChatCompletionStreamState()
 
-    def streamer(client: OpenAI) -> Iterator[ChatCompletionChunk]:
+    def streamer(client: SEG) -> Iterator[ChatCompletionChunk]:
         stream = client.chat.completions.create(
             model="gpt-4o-2024-08-06",
             messages=[
@@ -1111,8 +1109,8 @@ recommend checking a reliable weather website or a weather app.",
 
 
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
-def test_stream_method_in_sync(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> None:
-    checking_client: OpenAI | AsyncOpenAI = client if sync else async_client
+def test_stream_method_in_sync(sync: bool, client: SEG, async_client: AsyncSEG) -> None:
+    checking_client: SEG | AsyncSEG = client if sync else async_client
 
     assert_signatures_in_sync(
         checking_client.chat.completions.create,
@@ -1142,15 +1140,15 @@ class StreamListener(Generic[ResponseFormatT]):
 
 
 def _make_stream_snapshot_request(
-    func: Callable[[OpenAI], ChatCompletionStreamManager[ResponseFormatT]],
+    func: Callable[[SEG], ChatCompletionStreamManager[ResponseFormatT]],
     *,
     content_snapshot: Any,
     respx2_mock: MockRouter,
-    mock_client: OpenAI,
+    mock_client: SEG,
     on_event: Callable[[ChatCompletionStream[ResponseFormatT], ChatCompletionStreamEvent[ResponseFormatT]], Any]
     | None = None,
 ) -> StreamListener[ResponseFormatT]:
-    live = os.environ.get("OPENAI_LIVE") == "1"
+    live = os.environ.get("SEG_LIVE") == "1"
     if live:
 
         def _on_response(response: httpx2.Response) -> None:
@@ -1159,7 +1157,7 @@ def _make_stream_snapshot_request(
 
         respx2_mock.stop()
 
-        client = OpenAI(
+        client = SEG(
             http_client=httpx2.Client(
                 event_hooks={
                     "response": [_on_response],
@@ -1191,13 +1189,13 @@ def _make_stream_snapshot_request(
 
 
 def _make_raw_stream_snapshot_request(
-    func: Callable[[OpenAI], Iterator[ChatCompletionChunk]],
+    func: Callable[[SEG], Iterator[ChatCompletionChunk]],
     *,
     content_snapshot: Any,
     respx2_mock: MockRouter,
-    mock_client: OpenAI,
+    mock_client: SEG,
 ) -> None:
-    live = os.environ.get("OPENAI_LIVE") == "1"
+    live = os.environ.get("SEG_LIVE") == "1"
     if live:
 
         def _on_response(response: httpx2.Response) -> None:
@@ -1206,7 +1204,7 @@ def _make_raw_stream_snapshot_request(
 
         respx2_mock.stop()
 
-        client = OpenAI(
+        client = SEG(
             http_client=httpx2.Client(
                 event_hooks={
                     "response": [_on_response],

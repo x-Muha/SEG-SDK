@@ -8,21 +8,21 @@ from typing_extensions import TypeVar
 import httpx2
 from inline_snapshot import get_snapshot_value  # pyright: ignore[reportUnknownVariableType]
 
-from openai import OpenAI, AsyncOpenAI
+from seg import SEG, AsyncSEG
 from tests.respx2 import MockRouter
 
 _T = TypeVar("_T")
 
 
 def make_snapshot_request(
-    func: Callable[[OpenAI], _T],
+    func: Callable[[SEG], _T],
     *,
     content_snapshot: Any,
     respx2_mock: MockRouter,
-    mock_client: OpenAI,
+    mock_client: SEG,
     path: str,
 ) -> _T:
-    live = os.environ.get("OPENAI_LIVE") == "1"
+    live = os.environ.get("SEG_LIVE") == "1"
     if live:
 
         def _on_response(response: httpx2.Response) -> None:
@@ -31,7 +31,7 @@ def make_snapshot_request(
 
         respx2_mock.stop()
 
-        client = OpenAI(
+        client = SEG(
             http_client=httpx2.Client(
                 event_hooks={
                     "response": [_on_response],
@@ -58,14 +58,14 @@ def make_snapshot_request(
 
 
 async def make_async_snapshot_request(
-    func: Callable[[AsyncOpenAI], Awaitable[_T]],
+    func: Callable[[AsyncSEG], Awaitable[_T]],
     *,
     content_snapshot: Any,
     respx2_mock: MockRouter,
-    mock_client: AsyncOpenAI,
+    mock_client: AsyncSEG,
     path: str,
 ) -> _T:
-    live = os.environ.get("OPENAI_LIVE") == "1"
+    live = os.environ.get("SEG_LIVE") == "1"
     if live:
 
         async def _on_response(response: httpx2.Response) -> None:
@@ -74,7 +74,7 @@ async def make_async_snapshot_request(
 
         respx2_mock.stop()
 
-        client = AsyncOpenAI(
+        client = AsyncSEG(
             http_client=httpx2.AsyncClient(
                 event_hooks={
                     "response": [_on_response],

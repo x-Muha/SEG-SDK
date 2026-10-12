@@ -7,11 +7,11 @@ import httpx2
 import pytest
 from pydantic import BaseModel
 
-import openai
-from openai import OpenAI, AsyncOpenAI
+import seg
+from seg import SEG, AsyncSEG
 from tests.respx2 import MockRouter
-from openai.types.chat import ParsedChatCompletion
-from openai.lib.streaming.chat import ChatCompletionStreamEvent
+from seg.types.chat import ParsedChatCompletion
+from seg.lib.streaming.chat import ChatCompletionStreamEvent
 
 from ...conftest import base_url
 
@@ -117,11 +117,11 @@ def assert_tool_stream(
 
 @pytest.mark.respx2(base_url=base_url)
 def test_duplicate_tool_call_deltas(
-    client: OpenAI, respx2_mock: MockRouter, tool_call_chunks: list[dict[str, Any]]
+    client: SEG, respx2_mock: MockRouter, tool_call_chunks: list[dict[str, Any]]
 ) -> None:
     mock_tool_stream(respx2_mock, tool_call_chunks)
     with client.chat.completions.stream(
-        model="gpt-4o-mini", messages=[], tools=[openai.pydantic_function_tool(ListFilesArgs, name="list_files")]
+        model="gpt-4o-mini", messages=[], tools=[seg.pydantic_function_tool(ListFilesArgs, name="list_files")]
     ) as stream:
         events = list(stream)
         assert_tool_stream(stream.get_final_completion(), events, tool_call_chunks)
@@ -129,11 +129,11 @@ def test_duplicate_tool_call_deltas(
 
 @pytest.mark.respx2(base_url=base_url)
 async def test_async_duplicate_tool_call_deltas(
-    async_client: AsyncOpenAI, respx2_mock: MockRouter, tool_call_chunks: list[dict[str, Any]]
+    async_client: AsyncSEG, respx2_mock: MockRouter, tool_call_chunks: list[dict[str, Any]]
 ) -> None:
     mock_tool_stream(respx2_mock, tool_call_chunks)
     async with async_client.chat.completions.stream(
-        model="gpt-4o-mini", messages=[], tools=[openai.pydantic_function_tool(ListFilesArgs, name="list_files")]
+        model="gpt-4o-mini", messages=[], tools=[seg.pydantic_function_tool(ListFilesArgs, name="list_files")]
     ) as stream:
         events = [event async for event in stream]
         assert_tool_stream(await stream.get_final_completion(), events, tool_call_chunks)

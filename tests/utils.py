@@ -11,8 +11,8 @@ from typing_extensions import Literal, get_args, get_origin, assert_type
 
 import rich
 
-from openai._types import Omit, NoneType
-from openai._utils import (
+from seg._types import Omit, NoneType
+from seg._utils import (
     is_dict,
     is_list,
     is_list_type,
@@ -22,8 +22,8 @@ from openai._utils import (
     is_annotated_type,
     is_type_alias_type,
 )
-from openai._compat import PYDANTIC_V1, field_outer_type, get_model_fields
-from openai._models import BaseModel
+from seg._compat import PYDANTIC_V1, field_outer_type, get_model_fields
+from seg._models import BaseModel
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 

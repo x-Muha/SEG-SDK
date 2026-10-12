@@ -4,7 +4,7 @@ from copy import deepcopy
 
 import pytest
 
-from openai.lib.streaming._deltas import accumulate_delta
+from seg.lib.streaming._deltas import accumulate_delta
 
 
 @pytest.mark.parametrize("initial", [{}, {"tool_calls": None}, {"tool_calls": []}])

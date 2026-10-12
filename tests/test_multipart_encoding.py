@@ -1,5 +1,3 @@
-# File generated from our OpenAPI spec by Castiron. See CONTRIBUTING.md for details.
-
 from __future__ import annotations
 
 import json
@@ -10,9 +8,9 @@ from email.message import EmailMessage
 
 import httpx2
 
-from openai import omit
-from openai._files import to_httpx_files
-from openai._multipart import encode_multipart
+from seg import omit
+from seg._files import to_httpx_files
+from seg._multipart import encode_multipart
 
 ENCODINGS = {"offer": ("application/sdp", False), "settings": ("application/json", True)}
 OFFER = "v=0\r\ns=Unicode π\r\n"

@@ -1,128 +1,57 @@
 # Repository Guidance
 
-## Generated SDK
+This is the hand-maintained Python SDK for the SovereignEG (SEG) API, published on PyPI as
+`seg-sdk` and imported as `seg`. It started as a fork of a generated OpenAI-style client and was
+trimmed to the endpoints the SEG backend actually serves. There is no code generator any more:
+edit the source directly.
 
-Most SDK source is generated from the OpenAI API schema. Follow `CONTRIBUTING.md` before
-changing generated files. Handwritten policy, automation, tests, and examples
-should remain small and should not alter exported SDK APIs unless the change
-explicitly requires it.
+## Scope
 
-## Custom-code budget
+The SEG gateway serves these routes, and the SDK must not grow beyond them without a matching
+backend change:
 
-Follow [the custom-code guidance](scripts/castiron/CUSTOM_CODE.md). Budget changes
-belong in a separate PR containing only `.castiron-ratchet.json`, with an explicit justification
-in the PR description. Increases require a **human approving review** before merging.
-Agents may investigate and draft proposals, but must not approve budget increases
-(including through a human's credentials) or bypass the gate. Do not weaken
-counting, broaden exclusions, or alter generation metadata to make a change pass.
-The checker and effective budget come from main, not the PR. Keep default CODEOWNERS.
+| Client resource           | Route                                      |
+| ------------------------- | ------------------------------------------ |
+| `client.chat.completions` | `POST /v1/chat/completions` (+ streaming)  |
+| `client.embeddings`       | `POST /v1/embeddings`                      |
+| `client.images.generate`  | `POST /v1/images/generations`              |
+| `client.moderations`      | `POST /v1/moderations`                     |
+| `client.models`           | `GET /v1/models`, `GET /v1/models/{id}`    |
+| `client.decisions`        | `POST /v1/decisions`                       |
 
-## Security requirements for coding agents
+Authentication is a single `Authorization: Bearer sk-...` header from `api_key` /
+`SEG_API_KEY`. The default base URL is `https://sovereigneg.com/v1` (`SEG_BASE_URL` overrides it).
 
-- Never commit real API or admin keys, bearer tokens, webhook secrets, cloud
-  credentials, X.509 private keys, release credentials, or `.env` files. Read
-  `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`, `OPENAI_WEBHOOK_SECRET`, and other
-  credentials from the environment; use clearly fake examples and fixtures.
-- Redact credentials, `Authorization` and `api-key` headers, customer data, and
-  sensitive request or response bodies from logs, exceptions, snapshots, and
-  test output. Clearly fake or sanitized fixtures and safe `APIError.body`
-  diagnostics may remain. Preserve existing sensitive-header filtering,
-  including debug logging.
-- Review direct and transitive dependency changes in `pyproject.toml`, optional
-  extras, dependency groups, and `uv.lock`. Check
-  package provenance, build backends, and install scripts before accepting or
-  running them.
-- Pin third-party GitHub Actions to reviewed full commit SHAs. Minimize
-  job-level token permissions and never expose secrets or write-capable tokens
-  to untrusted pull-request code.
-- Preserve separate build and publish jobs, protected release credentials, and
-  PyPI Trusted Publishing. Grant `id-token: write` only to the trusted,
-  upload-only publishing job; do not introduce long-lived PyPI tokens.
-- Obtain SDK CODEOWNER review and add focused synchronous and asynchronous
-  security regression tests, as applicable, for changes to authentication,
-  X.509 or webhook verification, HTTP destinations, redirects, proxies, TLS,
-  cloud metadata, file uploads, serialization, dependencies, GitHub Actions,
-  or release workflows.
-- Report suspected vulnerabilities privately as described in `SECURITY.md`;
-  never disclose them in public issues, pull requests, or logs.
+## Working rules
+
+- Keep the sync and async clients, and their `with_raw_response` / `with_streaming_response`
+  wrappers, in step whenever a method changes.
+- Mock HTTP in tests with the `respx2_mock` fixture; do not add tests that need a mock server.
+  Live calls belong only in `tests/smoke/` and must skip when `TEST_API_BASE_URL` is unset.
+- Run `./scripts/lint` and `./scripts/test` before finishing. Pyright runs in strict mode.
+- Do not rename the import package (`seg`), the client classes (`SEG`, `AsyncSEG`), or the
+  environment variables without an explicit request.
+- Follow `CONTRIBUTING.md` for the checklist when adding an endpoint.
+
+## Security requirements
+
+- Never commit real API keys, bearer tokens, or `.env` files. Read credentials from the
+  environment and use clearly fake values (`sk-test`, `My API Key`) in tests and examples.
+- Keep `Authorization` redaction in debug logging intact (`src/seg/_utils/_logs.py`).
+- Review dependency changes in `pyproject.toml` and `uv.lock`; the lock is regenerated with
+  `uv lock` and verified in CI with `uv lock --check`.
+- Pin third-party GitHub Actions to full commit SHAs. The publish workflow keeps the build job
+  without `id-token: write`; only the upload-only job gets it.
+- Report suspected vulnerabilities privately as described in `SECURITY.md`.
 
 ## Python version policy
 
-- `requires-python` in `pyproject.toml` is the authoritative technical minimum.
-- `PYTHON_VERSION_POLICY.md` is the human-readable support and release policy.
-- Support every fully released, non-EOL CPython line. A documented grace period
-  may temporarily add the most recently retired line.
-- Keep `requires-python`, classifiers, dependency markers, README requirements,
-  static-analysis targets, `.python-version`, and CI synchronized.
-- Do not combine a minimum-Python change with unrelated SDK or dependency
-  upgrades.
-
-## Changing the minimum Python version
-
-1. Update `pyproject.toml`, `.python-version`, the lock files, README,
-   `CONTRIBUTING.md`, and `PYTHON_VERSION_POLICY.md`.
-2. Remove dependency branches that only served the retired runtime.
-3. Update minimum/current and full-matrix CI coverage.
-4. Build both distributions and validate their `Requires-Python` metadata and
-   old-interpreter rejection behavior.
-5. Add a `## Release note` section to the pull request description naming the
-   new minimum and final compatible SDK release. Do not promise security
-   backports for the old release.
-6. Obtain SDK CODEOWNER approval.
-
-The deterministic Python policy check proves repository surfaces agree. It
-does not decide whether an EOL grace period or floor increase is appropriate.
-
-## Automation map
-
-- `.github/workflows/ci.yml`
-  - On pull requests and branch pushes: lint, build, metadata validation, and
-    tests on the minimum and current stable Python releases.
-  - Nightly and manually: smoke-tests every supported Python release and the
-    allowed-failure prerelease.
-- `.github/workflows/python-version-review.yml`
-  - Monthly on the default branch: snapshots official CPython lifecycle data
-    plus the public PyPI Python-minor distribution and asks Codex for a policy
-    review.
-  - Runs a pinned Codex runtime as an unprivileged user with no command network
-    access and read-only repository permissions.
-  - Codex cannot edit the repository or call GitHub. A separate job with no
-    OpenAI credential opens or refreshes one issue only when action is needed.
-  - Never changes the Python floor or merges code automatically.
-
-## Validation
-
-Before publishing a Python-version change, run:
-
-```sh
-uv lock
-uv lock --check
-./scripts/build
-uv run --locked --all-extras python scripts/check-python-version-policy.py
-uv run --locked --all-extras python scripts/utils/validate-python-version-wheel.py
-python3.9 scripts/utils/validate-python-version-wheel.py --check-python-39
-uv run --locked --all-extras python scripts/utils/validate-bedrock-wheel.py
-uv run --locked --all-extras python scripts/utils/validate-httpx2-wheel.py
-./scripts/lint
-./scripts/test
-```
-
-Also run the scheduled compatibility matrix before release.
+`requires-python` in `pyproject.toml` is the technical minimum and `PYTHON_VERSION_POLICY.md` is
+the human-readable policy. When changing the minimum, update `pyproject.toml`, `.python-version`,
+the classifiers, the README, the CI matrix, and the lock file together.
 
 ## Large-payload compatibility
 
-Treat large payloads as a normal API contract, not evidence of malformed or
-hostile input. Responses, Chat Completions, and other APIs can legitimately
-return large `application/json` bodies and streaming events. Do not introduce
-arbitrary fixed limits on bodies, events, or lines as a security or efficiency
-fix. Prefer incremental processing, amortized-linear buffering, timely cleanup,
-and caller cancellation. Any new rejection limit needs an explicit,
-owner-approved API contract and a review of existing supported payloads and
-transports.
-
-Protect this behavior with focused, deterministic public-entrypoint tests using
-large synthetic payloads generated in memory, not committed captures or live
-image generation. Their high memory use is intentional: do not shrink the
-payloads or raise client limits to make the tests pass. Keep coverage to the main
-JSON and streaming categories, and run large cases sequentially to keep peak
-memory reasonable. The fixture size is a regression probe, not a new API maximum.
+Large JSON bodies and long streams are normal API behaviour, not hostile input. Do not add fixed
+size limits on bodies, events, or lines; prefer incremental processing. `tests/test_large_payload_contract.py`
+protects this with synthetic payloads generated in memory; do not shrink them.

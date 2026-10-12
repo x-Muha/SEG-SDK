@@ -9,8 +9,8 @@ body:
   - type: checkboxes
     id: non_api
     attributes:
-      label: Confirm this is a feature request for the Python library and not the underlying OpenAI API.
-      description: Feature requests for the underlying OpenAI API should be reported on our [Developer Community](https://community.openai.com/c/api/7)
+      label: Confirm this is a feature request for the Python library and not the underlying SEG API.
+      description: Feature requests for the underlying SEG API should be reported on our [Developer Community](https://sovereigneg.com/support)
       options:
         - label: This is a feature request for the Python library
           required: true

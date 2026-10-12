@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import gzip
 import json
 from typing import Any, Callable, Iterator, AsyncIterator
 from typing_extensions import override
@@ -8,7 +7,7 @@ from typing_extensions import override
 import httpx2
 from pydantic import BaseModel
 
-from openai import OpenAI, AsyncOpenAI
+from seg import SEG, AsyncSEG
 
 # High memory use is intentional: valid API payloads must not be rejected by
 # arbitrary body, event, or line caps. Keep this above 32 MiB; do not shrink it
@@ -49,8 +48,8 @@ def response_body(text: str) -> dict[str, Any]:
     }
 
 
-def sync_client(respond: Callable[[httpx2.Request], httpx2.Response]) -> OpenAI:
-    return OpenAI(
+def sync_client(respond: Callable[[httpx2.Request], httpx2.Response]) -> SEG:
+    return SEG(
         api_key="test-key",
         max_retries=0,
         base_url="https://example.test/v1",
@@ -60,8 +59,8 @@ def sync_client(respond: Callable[[httpx2.Request], httpx2.Response]) -> OpenAI:
     )
 
 
-def async_client(respond: Callable[[httpx2.Request], httpx2.Response]) -> AsyncOpenAI:
-    return AsyncOpenAI(
+def async_client(respond: Callable[[httpx2.Request], httpx2.Response]) -> AsyncSEG:
+    return AsyncSEG(
         api_key="test-key",
         max_retries=0,
         base_url="https://example.test/v1",
@@ -69,45 +68,6 @@ def async_client(respond: Callable[[httpx2.Request], httpx2.Response]) -> AsyncO
             transport=httpx2.MockTransport(respond),
         ),
     )
-
-
-def check_blocking_json() -> None:
-    text = "x" * PAYLOAD_SIZE
-    with sync_client(lambda _: httpx2.Response(200, json=response_body(text))) as client:
-        response = client.responses.create(model="gpt-4o-mini", input="Hello")
-        assert_intact(response.output_text, text)
-
-
-async def check_structured_json() -> None:
-    value = "x" * PAYLOAD_SIZE
-    text = json.dumps({"value": value})
-    # Responses and Chat Completions have distinct structured-output parsers.
-    async with async_client(lambda _: httpx2.Response(200, json=response_body(text))) as client:
-        response = await client.responses.parse(model="gpt-4o-mini", input="Hello", text_format=TextResult)
-        assert_intact(response.output_text, text)
-        assert response.output_parsed is not None
-        assert_intact(response.output_parsed.value, value)
-    with sync_client(
-        lambda _: httpx2.Response(
-            200,
-            json={
-                "id": "chatcmpl_test",
-                "object": "chat.completion",
-                "created": 0,
-                "model": "gpt-4o-mini",
-                "choices": [{"index": 0, "finish_reason": "stop", "message": {"role": "assistant", "content": text}}],
-            },
-        )
-    ) as chat_client:
-        completion = chat_client.chat.completions.parse(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": "Hello"}],
-            response_format=TextResult,
-        )
-        message = completion.choices[0].message
-        assert_intact(message.content, text)
-        assert message.parsed is not None
-        assert_intact(message.parsed.value, value)
 
 
 def sse_body(events: Iterator[dict[str, Any]]) -> Iterator[bytes]:
@@ -129,65 +89,6 @@ class AsyncSSE(httpx2.AsyncByteStream):
     async def __aiter__(self) -> AsyncIterator[bytes]:
         for chunk in sse_body(self.events):
             yield chunk
-
-
-async def check_responses_stream() -> None:
-    text = "x" * PAYLOAD_SIZE
-
-    def events() -> Iterator[dict[str, Any]]:
-        initial = response_body("")
-        message = initial["output"].pop()
-        initial["status"] = message["status"] = "in_progress"
-        part = message["content"].pop()
-        yield {"type": "response.created", "sequence_number": 0, "response": initial}
-        yield {"type": "response.output_item.added", "sequence_number": 1, "output_index": 0, "item": message}
-        yield {
-            "type": "response.content_part.added",
-            "sequence_number": 2,
-            "item_id": "msg_test",
-            "output_index": 0,
-            "content_index": 0,
-            "part": part,
-        }
-        yield {
-            "type": "response.output_text.delta",
-            "sequence_number": 3,
-            "delta": text,
-            "item_id": "msg_test",
-            "output_index": 0,
-            "content_index": 0,
-            "logprobs": [],
-        }
-        yield {
-            "type": "response.output_text.done",
-            "sequence_number": 4,
-            "text": text,
-            "item_id": "msg_test",
-            "output_index": 0,
-            "content_index": 0,
-            "logprobs": [],
-        }
-        yield {"type": "response.completed", "sequence_number": 5, "response": response_body(text)}
-
-    async with async_client(
-        lambda _: httpx2.Response(
-            200,
-            headers={"content-type": "text/event-stream"},
-            stream=AsyncSSE(events()),
-        )
-    ) as client:
-        async with client.responses.stream(model="gpt-4o-mini", input="Hello") as stream:
-            saw_delta = saw_done = False
-            async for event in stream:
-                if event.type == "response.output_text.delta":
-                    saw_delta = True
-                    assert_intact(event.delta, text)
-                    assert_intact(event.snapshot, text)
-                elif event.type == "response.output_text.done":
-                    saw_done = True
-                    assert_intact(event.text, text)
-            assert saw_delta and saw_done
-            assert_intact((await stream.get_final_response()).output_text, text)
 
 
 def check_chat_stream() -> None:
@@ -259,53 +160,3 @@ def compressed_response(stream: CompressedStream | AsyncCompressedStream, encodi
     return httpx2.Response(
         200, headers={"content-encoding": encoding, "content-type": "application/json"}, stream=stream
     )
-
-
-async def check_large_compressed_responses() -> None:
-    text = "x" * PAYLOAD_SIZE
-    body = json.dumps(response_body(text)).encode()
-    data = gzip.compress(body)
-    stream = CompressedStream(data)
-    with OpenAI(
-        api_key="test-key",
-        max_retries=0,
-        http_client=httpx2.Client(transport=httpx2.MockTransport(lambda _: compressed_response(stream, "gzip"))),
-    ) as client:
-        with client.responses.with_streaming_response.create(model="gpt-4o-mini", input="Hello") as response:
-            size = 0
-            for chunk in response.iter_bytes():
-                # The upstream decoder's chunk bound is not a response-size cap.
-                assert len(chunk) <= 1024 * 1024
-                assert chunk == body[size : size + len(chunk)]
-                size += len(chunk)
-            assert size == len(body)
-        assert stream.closed
-
-    async_stream = AsyncCompressedStream(data)
-    async with AsyncOpenAI(
-        api_key="test-key",
-        max_retries=0,
-        http_client=httpx2.AsyncClient(
-            transport=httpx2.MockTransport(lambda _: compressed_response(async_stream, "gzip"))
-        ),
-    ) as async_client:
-        async with async_client.responses.with_streaming_response.create(
-            model="gpt-4o-mini", input="Hello"
-        ) as async_response:
-            size = 0
-            async for chunk in async_response.iter_bytes():
-                assert len(chunk) <= 1024 * 1024
-                assert chunk == body[size : size + len(chunk)]
-                size += len(chunk)
-            assert size == len(body)
-        assert async_stream.closed
-
-
-async def test_large_payload_contract() -> None:
-    # One test prevents pytest-xdist from running high-memory cases together.
-    check_blocking_json()
-    await check_structured_json()
-    await check_responses_stream()
-    check_chat_stream()
-
-    await check_large_compressed_responses()

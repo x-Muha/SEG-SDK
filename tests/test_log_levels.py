@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-from openai._utils._logs import setup_logging
+from seg._utils._logs import setup_logging
 
 
 @pytest.mark.parametrize(
@@ -17,16 +17,16 @@ from openai._utils._logs import setup_logging
         ("critical", logging.CRITICAL),
     ],
 )
-def test_openai_log_sets_standard_log_level(
+def test_seg_log_sets_standard_log_level(
     setting: str,
     expected_level: int,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    logger = logging.getLogger("openai")
+    logger = logging.getLogger("seg")
     original_level = logger.level
 
     try:
-        monkeypatch.setenv("OPENAI_LOG", setting)
+        monkeypatch.setenv("SEG_LOG", setting)
         setup_logging()
         assert logger.level == expected_level
     finally:

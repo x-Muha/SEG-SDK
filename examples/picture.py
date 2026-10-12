@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 
-from openai import OpenAI
+from seg import SEG
 
-# gets OPENAI_API_KEY from your environment variables
-openai = OpenAI()
+# gets SEG_API_KEY from your environment variables
+seg = SEG()
 
 prompt = "An astronaut lounging in a tropical resort in space, pixel art"
-model = "dall-e-3"
+model = "ming-image-0.1-design"
 
 
 def main() -> None:
     # Generate an image based on the prompt
-    response = openai.images.generate(prompt=prompt, model=model)
+    response = seg.images.generate(prompt=prompt, model=model)
 
     # Prints response containing a URL link to image
     print(response)

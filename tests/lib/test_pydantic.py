@@ -5,16 +5,16 @@ from enum import Enum
 from pydantic import Field, BaseModel
 from inline_snapshot import snapshot
 
-import openai
-from openai._compat import PYDANTIC_V1
-from openai.lib._pydantic import to_strict_json_schema
+import seg
+from seg._compat import PYDANTIC_V1
+from seg.lib._pydantic import to_strict_json_schema
 
 from .schema_types.query import Query
 
 
 def test_most_types() -> None:
     if not PYDANTIC_V1:
-        assert openai.pydantic_function_tool(Query)["function"] == snapshot(
+        assert seg.pydantic_function_tool(Query)["function"] == snapshot(
             {
                 "name": "Query",
                 "strict": True,
@@ -85,7 +85,7 @@ def test_most_types() -> None:
             }
         )
     else:
-        assert openai.pydantic_function_tool(Query)["function"] == snapshot(
+        assert seg.pydantic_function_tool(Query)["function"] == snapshot(
             {
                 "name": "Query",
                 "strict": True,
@@ -182,7 +182,7 @@ class ColorDetection(BaseModel):
 
 def test_enums() -> None:
     if not PYDANTIC_V1:
-        assert openai.pydantic_function_tool(ColorDetection)["function"] == snapshot(
+        assert seg.pydantic_function_tool(ColorDetection)["function"] == snapshot(
             {
                 "name": "ColorDetection",
                 "strict": True,
@@ -209,7 +209,7 @@ def test_enums() -> None:
             }
         )
     else:
-        assert openai.pydantic_function_tool(ColorDetection)["function"] == snapshot(
+        assert seg.pydantic_function_tool(ColorDetection)["function"] == snapshot(
             {
                 "name": "ColorDetection",
                 "strict": True,

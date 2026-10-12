@@ -10,10 +10,10 @@ from typing_extensions import override
 
 import pytest
 
-from openai import OpenAI, AsyncOpenAI
+from seg import SEG, AsyncSEG
 
 pytestmark = pytest.mark.skipif(
-    os.environ.get("OPENAI_TEST_LEGACY_HTTPX") != "1", reason="requires the dedicated legacy HTTPX compatibility lane"
+    os.environ.get("SEG_TEST_LEGACY_HTTPX") != "1", reason="requires the dedicated legacy HTTPX compatibility lane"
 )
 
 
@@ -23,7 +23,7 @@ def test_external_legacy_httpx_client_is_supported() -> None:
     def handler(request: Any) -> Any:
         return httpx.Response(200, request=request, json={"object": "list", "data": []})
 
-    with OpenAI(
+    with SEG(
         api_key="test",
         base_url="https://example.test/v1",
         http_client=httpx.Client(transport=httpx.MockTransport(handler), trust_env=False),
@@ -41,7 +41,7 @@ async def test_external_legacy_async_httpx_client_is_supported() -> None:
     async def handler(request: Any) -> Any:
         return httpx.Response(200, request=request, json={"object": "list", "data": []})
 
-    async with AsyncOpenAI(
+    async with AsyncSEG(
         api_key="test",
         base_url="https://example.test/v1",
         http_client=httpx.AsyncClient(transport=httpx.MockTransport(handler), trust_env=False),
@@ -72,7 +72,7 @@ async def test_external_legacy_aiohttp_client_is_supported() -> None:
     thread = threading.Thread(target=server.serve_forever)
     thread.start()
     try:
-        async with AsyncOpenAI(
+        async with AsyncSEG(
             api_key="test",
             base_url=f"http://127.0.0.1:{server.server_port}/v1",
             http_client=HttpxAiohttpClient(),

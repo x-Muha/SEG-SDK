@@ -6,8 +6,8 @@ import httpx2
 import pytest
 import pydantic
 
-from openai import OpenAI, BaseModel, AsyncOpenAI
-from openai._response import (
+from seg import SEG, AsyncSEG, BaseModel
+from seg._response import (
     APIResponse,
     BaseAPIResponse,
     AsyncAPIResponse,
@@ -15,8 +15,8 @@ from openai._response import (
     AsyncBinaryAPIResponse,
     extract_response_type,
 )
-from openai._streaming import Stream
-from openai._base_client import FinalRequestOptions
+from seg._streaming import Stream
+from seg._base_client import FinalRequestOptions
 
 from .utils import rich_print_str
 
@@ -39,7 +39,7 @@ def test_extract_response_type_direct_classes() -> None:
 def test_extract_response_type_direct_class_missing_type_arg() -> None:
     with pytest.raises(
         RuntimeError,
-        match="Expected type <class 'openai._response.AsyncAPIResponse'> to have a type argument at index 0 but it did not",
+        match="Expected type <class 'seg._response.AsyncAPIResponse'> to have a type argument at index 0 but it did not",
     ):
         extract_response_type(AsyncAPIResponse)
 
@@ -58,7 +58,7 @@ def test_extract_response_type_binary_response() -> None:
 class PydanticModel(pydantic.BaseModel): ...
 
 
-def test_response_parse_mismatched_basemodel(client: OpenAI) -> None:
+def test_response_parse_mismatched_basemodel(client: SEG) -> None:
     response = APIResponse(
         raw=httpx2.Response(200, content=b"foo"),
         client=client,
@@ -70,13 +70,13 @@ def test_response_parse_mismatched_basemodel(client: OpenAI) -> None:
 
     with pytest.raises(
         TypeError,
-        match="Pydantic models must subclass our base model type, e.g. `from openai import BaseModel`",
+        match="Pydantic models must subclass our base model type, e.g. `from seg import BaseModel`",
     ):
         response.parse(to=PydanticModel)
 
 
 @pytest.mark.asyncio
-async def test_async_response_parse_mismatched_basemodel(async_client: AsyncOpenAI) -> None:
+async def test_async_response_parse_mismatched_basemodel(async_client: AsyncSEG) -> None:
     response = AsyncAPIResponse(
         raw=httpx2.Response(200, content=b"foo"),
         client=async_client,
@@ -88,12 +88,12 @@ async def test_async_response_parse_mismatched_basemodel(async_client: AsyncOpen
 
     with pytest.raises(
         TypeError,
-        match="Pydantic models must subclass our base model type, e.g. `from openai import BaseModel`",
+        match="Pydantic models must subclass our base model type, e.g. `from seg import BaseModel`",
     ):
         await response.parse(to=PydanticModel)
 
 
-def test_response_parse_custom_stream(client: OpenAI) -> None:
+def test_response_parse_custom_stream(client: SEG) -> None:
     response = APIResponse(
         raw=httpx2.Response(200, content=b"foo"),
         client=client,
@@ -108,7 +108,7 @@ def test_response_parse_custom_stream(client: OpenAI) -> None:
 
 
 @pytest.mark.asyncio
-async def test_async_response_parse_custom_stream(async_client: AsyncOpenAI) -> None:
+async def test_async_response_parse_custom_stream(async_client: AsyncSEG) -> None:
     response = AsyncAPIResponse(
         raw=httpx2.Response(200, content=b"foo"),
         client=async_client,
@@ -127,7 +127,7 @@ class CustomModel(BaseModel):
     bar: int
 
 
-def test_response_parse_custom_model(client: OpenAI) -> None:
+def test_response_parse_custom_model(client: SEG) -> None:
     response = APIResponse(
         raw=httpx2.Response(200, content=json.dumps({"foo": "hello!", "bar": 2})),
         client=client,
@@ -143,7 +143,7 @@ def test_response_parse_custom_model(client: OpenAI) -> None:
 
 
 @pytest.mark.asyncio
-async def test_async_response_parse_custom_model(async_client: AsyncOpenAI) -> None:
+async def test_async_response_parse_custom_model(async_client: AsyncSEG) -> None:
     response = AsyncAPIResponse(
         raw=httpx2.Response(200, content=json.dumps({"foo": "hello!", "bar": 2})),
         client=async_client,
@@ -158,7 +158,7 @@ async def test_async_response_parse_custom_model(async_client: AsyncOpenAI) -> N
     assert obj.bar == 2
 
 
-def test_response_basemodel_request_id(client: OpenAI) -> None:
+def test_response_basemodel_request_id(client: SEG) -> None:
     response = APIResponse(
         raw=httpx2.Response(
             200,
@@ -182,7 +182,7 @@ def test_response_basemodel_request_id(client: OpenAI) -> None:
 
 
 @pytest.mark.asyncio
-async def test_async_response_basemodel_request_id(client: OpenAI) -> None:
+async def test_async_response_basemodel_request_id(client: SEG) -> None:
     response = AsyncAPIResponse(
         raw=httpx2.Response(
             200,
@@ -203,7 +203,7 @@ async def test_async_response_basemodel_request_id(client: OpenAI) -> None:
     assert obj.to_dict() == {"foo": "hello!", "bar": 2}
 
 
-def test_response_parse_annotated_type(client: OpenAI) -> None:
+def test_response_parse_annotated_type(client: SEG) -> None:
     response = APIResponse(
         raw=httpx2.Response(200, content=json.dumps({"foo": "hello!", "bar": 2})),
         client=client,
@@ -220,7 +220,7 @@ def test_response_parse_annotated_type(client: OpenAI) -> None:
     assert obj.bar == 2
 
 
-async def test_async_response_parse_annotated_type(async_client: AsyncOpenAI) -> None:
+async def test_async_response_parse_annotated_type(async_client: AsyncSEG) -> None:
     response = AsyncAPIResponse(
         raw=httpx2.Response(200, content=json.dumps({"foo": "hello!", "bar": 2})),
         client=async_client,
@@ -250,7 +250,7 @@ async def test_async_response_parse_annotated_type(async_client: AsyncOpenAI) ->
         (" \tfalse\r\n", False),
     ],
 )
-def test_response_parse_bool(client: OpenAI, content: str, expected: bool) -> None:
+def test_response_parse_bool(client: SEG, content: str, expected: bool) -> None:
     response = APIResponse(
         raw=httpx2.Response(200, content=content),
         client=client,
@@ -277,7 +277,7 @@ def test_response_parse_bool(client: OpenAI, content: str, expected: bool) -> No
         (" \tfalse\r\n", False),
     ],
 )
-async def test_async_response_parse_bool(client: AsyncOpenAI, content: str, expected: bool) -> None:
+async def test_async_response_parse_bool(client: AsyncSEG, content: str, expected: bool) -> None:
     response = AsyncAPIResponse(
         raw=httpx2.Response(200, content=content),
         client=client,
@@ -296,7 +296,7 @@ class OtherModel(BaseModel):
 
 
 @pytest.mark.parametrize("client", [False], indirect=True)  # loose validation
-def test_response_parse_expect_model_union_non_json_content(client: OpenAI) -> None:
+def test_response_parse_expect_model_union_non_json_content(client: SEG) -> None:
     response = APIResponse(
         raw=httpx2.Response(200, content=b"foo", headers={"Content-Type": "application/text"}),
         client=client,
@@ -313,7 +313,7 @@ def test_response_parse_expect_model_union_non_json_content(client: OpenAI) -> N
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("async_client", [False], indirect=True)  # loose validation
-async def test_async_response_parse_expect_model_union_non_json_content(async_client: AsyncOpenAI) -> None:
+async def test_async_response_parse_expect_model_union_non_json_content(async_client: AsyncSEG) -> None:
     response = AsyncAPIResponse(
         raw=httpx2.Response(200, content=b"foo", headers={"Content-Type": "application/text"}),
         client=async_client,

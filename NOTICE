@@ -1,0 +1,19 @@
+SEG Python SDK (seg-sdk)
+Modifications Copyright 2026 SovereignEG
+
+This product is a derivative work of the OpenAI Python library
+(https://github.com/openai/openai-python), Copyright 2026 OpenAI,
+licensed under the Apache License, Version 2.0. The original package,
+class, and environment-variable names were changed, unsupported API
+resources were removed, and the default endpoint was pointed at the
+SovereignEG API. This product is not affiliated with or endorsed by OpenAI.
+
+The following third-party components are bundled:
+
+- src/seg/_vendor/httpx_aiohttp: adapted from httpx-aiohttp 0.2.0
+  (https://github.com/karpetrosyan/httpx-aiohttp), Copyright 2025 Karen
+  Petrosyan, BSD 3-Clause License. See the LICENSE file in that directory.
+
+- tests/respx2: a fork of RESPX (https://github.com/lundberg/respx),
+  Copyright 2019 5 Monkeys Agency AB, BSD 3-Clause License. See
+  tests/respx2/LICENSE.md. Used for tests only; not shipped in the wheel.

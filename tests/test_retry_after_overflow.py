@@ -5,7 +5,7 @@ from unittest import mock
 import httpx2
 import pytest
 
-from openai import OpenAI, AsyncOpenAI, APIStatusError
+from seg import SEG, AsyncSEG, APIStatusError
 
 
 @pytest.mark.parametrize("async_mode", [False, True])
@@ -39,9 +39,9 @@ async def test_retry_after_numeric_overflow(
         return httpx2.Response(status, headers={**headers, "x-request-id": "synthetic-id"}, json={"error": body})
 
     with mock.patch("time.sleep") as sync_sleep, mock.patch("anyio.sleep") as async_sleep:
-        with mock.patch("openai._base_client.random", return_value=0), pytest.raises(APIStatusError) as exc:
+        with mock.patch("seg._base_client.random", return_value=0), pytest.raises(APIStatusError) as exc:
             if async_mode:
-                async with AsyncOpenAI(
+                async with AsyncSEG(
                     api_key="synthetic-key",
                     base_url="https://retry.test",
                     max_retries=1,
@@ -49,7 +49,7 @@ async def test_retry_after_numeric_overflow(
                 ) as async_client:
                     await async_client.models.retrieve("test")
             else:
-                with OpenAI(
+                with SEG(
                     api_key="synthetic-key",
                     base_url="https://retry.test",
                     max_retries=1,

@@ -1,0 +1,15 @@
+from __future__ import annotations
+
+from typing_extensions import Literal, Required, TypedDict
+
+__all__ = ["ModerationTextInputParam"]
+
+
+class ModerationTextInputParam(TypedDict, total=False):
+    """An object describing text to classify."""
+
+    text: Required[str]
+    """A string of text to classify."""
+
+    type: Required[Literal["text"]]
+    """Always `text`."""

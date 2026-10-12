@@ -10,8 +10,8 @@ import anyio
 import httpx2
 import pytest
 
-from openai import OpenAI, AsyncOpenAI, APITimeoutError, APIConnectionError
-from openai._streaming import Stream, AsyncStream, ServerSentEvent
+from seg import SEG, AsyncSEG, APITimeoutError, APIConnectionError
+from seg._streaming import Stream, AsyncStream, ServerSentEvent
 
 
 @pytest.fixture(
@@ -20,7 +20,7 @@ from openai._streaming import Stream, AsyncStream, ServerSentEvent
         pytest.param(
             "httpx",
             marks=pytest.mark.skipif(
-                os.environ.get("OPENAI_TEST_LEGACY_HTTPX") != "1", reason="requires the legacy HTTPX compatibility lane"
+                os.environ.get("SEG_TEST_LEGACY_HTTPX") != "1", reason="requires the legacy HTTPX compatibility lane"
             ),
         ),
     ]
@@ -73,7 +73,7 @@ async def test_request_errors_are_wrapped(
 
     received: list[str | None] = []
     if sync:
-        with OpenAI(
+        with SEG(
             api_key="synthetic",
             max_retries=2,
             http_client=http_module.Client(transport=http_module.MockTransport(handler), trust_env=False),
@@ -84,7 +84,7 @@ async def test_request_errors_are_wrapped(
                     received.append(chunk.choices[0].delta.content)
             assert stream.response.is_closed
     else:
-        async with AsyncOpenAI(
+        async with AsyncSEG(
             api_key="synthetic",
             max_retries=2,
             http_client=http_module.AsyncClient(transport=http_module.MockTransport(handler), trust_env=False),
@@ -114,8 +114,8 @@ async def test_request_errors_are_wrapped(
 async def test_request_errors_from_response_processing_are_not_wrapped(
     sync: bool,
     error_type: type[Exception],
-    client: OpenAI,
-    async_client: AsyncOpenAI,
+    client: SEG,
+    async_client: AsyncSEG,
 ) -> None:
     error = error_type("response processing failure")
     request = httpx2.Request("POST", "https://example.com")
@@ -166,7 +166,7 @@ async def test_request_errors_from_response_processing_are_not_wrapped(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
-async def test_basic(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> None:
+async def test_basic(sync: bool, client: SEG, async_client: AsyncSEG) -> None:
     def body() -> Iterator[bytes]:
         yield b"event: completion\n"
         yield b'data: {"foo":true}\n'
@@ -183,7 +183,7 @@ async def test_basic(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> N
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
-async def test_data_missing_event(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> None:
+async def test_data_missing_event(sync: bool, client: SEG, async_client: AsyncSEG) -> None:
     def body() -> Iterator[bytes]:
         yield b'data: {"foo":true}\n'
         yield b"\n"
@@ -199,7 +199,7 @@ async def test_data_missing_event(sync: bool, client: OpenAI, async_client: Asyn
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
-async def test_event_missing_data(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> None:
+async def test_event_missing_data(sync: bool, client: SEG, async_client: AsyncSEG) -> None:
     def body() -> Iterator[bytes]:
         yield b"event: ping\n"
         yield b"\n"
@@ -215,7 +215,7 @@ async def test_event_missing_data(sync: bool, client: OpenAI, async_client: Asyn
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
-async def test_multiple_events(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> None:
+async def test_multiple_events(sync: bool, client: SEG, async_client: AsyncSEG) -> None:
     def body() -> Iterator[bytes]:
         yield b"event: ping\n"
         yield b"\n"
@@ -237,7 +237,7 @@ async def test_multiple_events(sync: bool, client: OpenAI, async_client: AsyncOp
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
-async def test_multiple_events_with_data(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> None:
+async def test_multiple_events_with_data(sync: bool, client: SEG, async_client: AsyncSEG) -> None:
     def body() -> Iterator[bytes]:
         yield b"event: ping\n"
         yield b'data: {"foo":true}\n'
@@ -261,7 +261,7 @@ async def test_multiple_events_with_data(sync: bool, client: OpenAI, async_clien
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
-async def test_multiple_data_lines_with_empty_line(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> None:
+async def test_multiple_data_lines_with_empty_line(sync: bool, client: SEG, async_client: AsyncSEG) -> None:
     def body() -> Iterator[bytes]:
         yield b"event: ping\n"
         yield b"data: {\n"
@@ -283,7 +283,7 @@ async def test_multiple_data_lines_with_empty_line(sync: bool, client: OpenAI, a
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
-async def test_data_json_escaped_double_new_line(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> None:
+async def test_data_json_escaped_double_new_line(sync: bool, client: SEG, async_client: AsyncSEG) -> None:
     def body() -> Iterator[bytes]:
         yield b"event: ping\n"
         yield b'data: {"foo": "my long\\n\\ncontent"}'
@@ -300,7 +300,7 @@ async def test_data_json_escaped_double_new_line(sync: bool, client: OpenAI, asy
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
-async def test_multiple_data_lines(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> None:
+async def test_multiple_data_lines(sync: bool, client: SEG, async_client: AsyncSEG) -> None:
     def body() -> Iterator[bytes]:
         yield b"event: ping\n"
         yield b"data: {\n"
@@ -320,8 +320,8 @@ async def test_multiple_data_lines(sync: bool, client: OpenAI, async_client: Asy
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
 async def test_special_new_line_character(
     sync: bool,
-    client: OpenAI,
-    async_client: AsyncOpenAI,
+    client: SEG,
+    async_client: AsyncSEG,
 ) -> None:
     def body() -> Iterator[bytes]:
         yield b'data: {"content":" culpa"}\n'
@@ -351,8 +351,8 @@ async def test_special_new_line_character(
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
 async def test_multi_byte_character_multiple_chunks(
     sync: bool,
-    client: OpenAI,
-    async_client: AsyncOpenAI,
+    client: SEG,
+    async_client: AsyncSEG,
 ) -> None:
     def body() -> Iterator[bytes]:
         yield b'data: {"content":"'
@@ -372,7 +372,7 @@ async def test_multi_byte_character_multiple_chunks(
 
 
 @pytest.mark.asyncio
-async def test_async_stream_aclose(async_client: AsyncOpenAI) -> None:
+async def test_async_stream_aclose(async_client: AsyncSEG) -> None:
     def body() -> Iterator[bytes]:
         yield b"data: [DONE]\n\n"
 
@@ -400,7 +400,7 @@ async def test_async_stream_aclosing(raise_error: bool) -> None:
         yield b"data: [DONE]\n\n"
 
     response = httpx2.Response(200, content=to_aiter(body()), headers={"content-type": "text/event-stream"})
-    async with AsyncOpenAI(
+    async with AsyncSEG(
         api_key="fake-test-key",
         http_client=httpx2.AsyncClient(transport=httpx2.MockTransport(lambda _request: response)),
     ) as client:
@@ -438,8 +438,8 @@ def make_event_iterator(
     content: Iterator[bytes],
     *,
     sync: bool,
-    client: OpenAI,
-    async_client: AsyncOpenAI,
+    client: SEG,
+    async_client: AsyncSEG,
 ) -> Iterator[ServerSentEvent] | AsyncIterator[ServerSentEvent]:
     if sync:
         return Stream(cast_to=object, client=client, response=httpx2.Response(200, content=content))._iter_events()

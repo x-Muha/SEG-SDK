@@ -7,8 +7,8 @@ from typing_extensions import override
 import httpx2
 import pytest
 
-from openai import OpenAI, AsyncOpenAI
-from openai._streaming import Stream, SSEDecoder, AsyncStream, ServerSentEvent, _SSELineDecoder
+from seg import SEG, AsyncSEG
+from seg._streaming import Stream, SSEDecoder, AsyncStream, ServerSentEvent, _SSELineDecoder
 
 
 async def _aiter(chunks: Iterable[bytes]) -> AsyncIterator[bytes]:
@@ -142,7 +142,7 @@ class _AsyncBody(httpx2.AsyncByteStream):
         self.closed = True
 
 
-def test_sync_interruption_closes_response(client: OpenAI) -> None:
+def test_sync_interruption_closes_response(client: SEG) -> None:
     body = _SyncBody()
     response = httpx2.Response(200, stream=body, request=httpx2.Request("GET", "https://example.invalid"))
     stream = Stream(cast_to=object, client=client, response=response)
@@ -153,7 +153,7 @@ def test_sync_interruption_closes_response(client: OpenAI) -> None:
     assert stream._decoder._data == []
 
 
-async def test_async_interruption_closes_response(async_client: AsyncOpenAI) -> None:
+async def test_async_interruption_closes_response(async_client: AsyncSEG) -> None:
     body = _AsyncBody()
     response = httpx2.Response(200, stream=body, request=httpx2.Request("GET", "https://example.invalid"))
     stream = AsyncStream(cast_to=object, client=async_client, response=response)
@@ -165,7 +165,7 @@ async def test_async_interruption_closes_response(async_client: AsyncOpenAI) -> 
     assert decoder._data == []
 
 
-async def test_cancellation_clears_partial_event_and_closes_response(async_client: AsyncOpenAI) -> None:
+async def test_cancellation_clears_partial_event_and_closes_response(async_client: AsyncSEG) -> None:
     started = asyncio.Event()
 
     class PausedBody(_AsyncBody):
@@ -191,7 +191,7 @@ async def test_cancellation_clears_partial_event_and_closes_response(async_clien
 
 
 @pytest.mark.parametrize("sync", [True, False])
-async def test_context_exit_after_event(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> None:
+async def test_context_exit_after_event(sync: bool, client: SEG, async_client: AsyncSEG) -> None:
     if sync:
         response = httpx2.Response(200, content=iter([b"data:{}\n\n", b"data:partial"]))
         with Stream(cast_to=object, client=client, response=response) as stream:

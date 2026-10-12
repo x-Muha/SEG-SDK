@@ -1,17 +1,17 @@
 import pytest
 
-import openai
-from openai.lib._old_api import APIRemovedInV1
+import seg
+from seg.lib._old_api import APIRemovedInV1
 
 
 def test_basic_attribute_access_works() -> None:
-    for attr in dir(openai):
-        getattr(openai, attr)
+    for attr in dir(seg):
+        getattr(seg, attr)
 
 
 def test_helpful_error_is_raised() -> None:
     with pytest.raises(APIRemovedInV1):
-        openai.Completion.create()  # type: ignore
+        seg.Completion.create()  # type: ignore
 
     with pytest.raises(APIRemovedInV1):
-        openai.ChatCompletion.create()  # type: ignore
+        seg.ChatCompletion.create()  # type: ignore

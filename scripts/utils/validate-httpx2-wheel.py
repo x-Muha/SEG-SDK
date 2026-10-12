@@ -35,7 +35,7 @@ def validate_metadata(wheel: Path) -> None:
         metadata = email.message_from_bytes(archive.read(metadata_names[0]))
 
         for name in ("LICENSE", "README.md", "FORK.md"):
-            if f"openai/_vendor/httpx_aiohttp/{name}" not in archive.namelist():
+            if f"seg/_vendor/httpx_aiohttp/{name}" not in archive.namelist():
                 raise RuntimeError(f"The wheel omitted the vendored aiohttp adapter's {name}")
 
     requirements = metadata.get_all("Requires-Dist", [])
@@ -61,7 +61,7 @@ def validate_metadata(wheel: Path) -> None:
 def run_case(
     wheel: Path, *, extra: str | None, tests: list[Path], dependencies: list[str], legacy: bool = False
 ) -> None:
-    with tempfile.TemporaryDirectory(prefix="openai-httpx2-wheel-") as directory:
+    with tempfile.TemporaryDirectory(prefix="seg-httpx2-wheel-") as directory:
         environment_path = Path(directory) / "venv"
         subprocess.run([sys.executable, "-m", "venv", str(environment_path)], check=True)
         python = venv_python(environment_path)
@@ -88,7 +88,7 @@ def run_case(
         for name in ("ALL_PROXY", "HTTPS_PROXY", "HTTP_PROXY", "all_proxy", "https_proxy", "http_proxy"):
             test_environment.pop(name, None)
         if legacy:
-            test_environment["OPENAI_TEST_LEGACY_HTTPX"] = "1"
+            test_environment["SEG_TEST_LEGACY_HTTPX"] = "1"
         subprocess.run(
             [str(python), "-m", "pytest", "-o", "addopts=", *(str(test) for test in tests)],
             cwd=directory,

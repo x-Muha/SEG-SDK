@@ -8,11 +8,11 @@ import pytest
 from pydantic import Field, BaseModel
 from inline_snapshot import snapshot
 
-import openai
-from openai import OpenAI, AsyncOpenAI
+import seg
+from seg import SEG, AsyncSEG
+from seg._utils import assert_signatures_in_sync
+from seg._compat import PYDANTIC_V1
 from tests.respx2 import MockRouter
-from openai._utils import assert_signatures_in_sync
-from openai._compat import PYDANTIC_V1
 
 from ..utils import print_obj
 from ...conftest import base_url
@@ -25,11 +25,11 @@ _T = TypeVar("_T")
 #
 # you can update them with
 #
-# `OPENAI_LIVE=1 pytest --inline-snapshot=fix -p no:xdist -o addopts=""`
+# `SEG_LIVE=1 pytest --inline-snapshot=fix -p no:xdist -o addopts=""`
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_nothing(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_nothing(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     completion = make_snapshot_request(
         lambda c: c.chat.completions.parse(
             model="gpt-4o-2024-08-06",
@@ -96,7 +96,7 @@ recommend checking a reliable weather website or app like the Weather Channel or
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_pydantic_model(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_pydantic_model(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     class Location(BaseModel):
         city: str
         temperature: float
@@ -169,7 +169,7 @@ ParsedChatCompletion(
 
 @pytest.mark.respx2(base_url=base_url)
 def test_parse_pydantic_model_optional_default(
-    client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
+    client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     class Location(BaseModel):
         city: str
@@ -242,7 +242,7 @@ ParsedChatCompletion(
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_pydantic_model_enum(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_pydantic_model_enum(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     class Color(Enum):
         """The detected color"""
 
@@ -296,7 +296,7 @@ ParsedChoice(
 
 @pytest.mark.respx2(base_url=base_url)
 def test_parse_pydantic_model_multiple_choices(
-    client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
+    client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     class Location(BaseModel):
         city: str
@@ -378,7 +378,7 @@ def test_parse_pydantic_model_multiple_choices(
 
 @pytest.mark.respx2(base_url=base_url)
 @pytest.mark.skipif(PYDANTIC_V1, reason="dataclasses only supported in v2")
-def test_parse_pydantic_dataclass(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_pydantic_dataclass(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     from pydantic.dataclasses import dataclass
 
     @dataclass
@@ -451,9 +451,7 @@ ParsedChatCompletion(
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_pydantic_tool_model_all_types(
-    client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_pydantic_tool_model_all_types(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     completion = make_snapshot_request(
         lambda c: c.chat.completions.parse(
             model="gpt-4o-2024-08-06",
@@ -463,7 +461,7 @@ def test_pydantic_tool_model_all_types(
                     "content": "look up all my orders in may of last year that were fulfilled but not delivered on time",
                 },
             ],
-            tools=[openai.pydantic_function_tool(Query)],
+            tools=[seg.pydantic_function_tool(Query)],
             response_format=Query,
         ),
         content_snapshot=snapshot(
@@ -533,13 +531,13 @@ r":"<=","value":"2022-05-31"},{"column":"status","operator":"=","value":"fulfill
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_max_tokens_reached(client: OpenAI, respx2_mock: MockRouter) -> None:
+def test_parse_max_tokens_reached(client: SEG, respx2_mock: MockRouter) -> None:
     class Location(BaseModel):
         city: str
         temperature: float
         units: Literal["c", "f"]
 
-    with pytest.raises(openai.LengthFinishReasonError):
+    with pytest.raises(seg.LengthFinishReasonError):
         make_snapshot_request(
             lambda c: c.chat.completions.parse(
                 model="gpt-4o-2024-08-06",
@@ -562,7 +560,7 @@ def test_parse_max_tokens_reached(client: OpenAI, respx2_mock: MockRouter) -> No
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_pydantic_model_refusal(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_pydantic_model_refusal(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     class Location(BaseModel):
         city: str
         temperature: float
@@ -611,7 +609,7 @@ def test_parse_pydantic_model_refusal(client: OpenAI, respx2_mock: MockRouter, m
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_pydantic_tool(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_pydantic_tool(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     class GetWeatherArgs(BaseModel):
         city: str
         country: str
@@ -627,7 +625,7 @@ def test_parse_pydantic_tool(client: OpenAI, respx2_mock: MockRouter, monkeypatc
                 },
             ],
             tools=[
-                openai.pydantic_function_tool(GetWeatherArgs),
+                seg.pydantic_function_tool(GetWeatherArgs),
             ],
         ),
         content_snapshot=snapshot(
@@ -672,9 +670,7 @@ def test_parse_pydantic_tool(client: OpenAI, respx2_mock: MockRouter, monkeypatc
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_multiple_pydantic_tools(
-    client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_parse_multiple_pydantic_tools(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     class GetWeatherArgs(BaseModel):
         """Get the temperature for the given country/city combo"""
 
@@ -700,8 +696,8 @@ def test_parse_multiple_pydantic_tools(
                 },
             ],
             tools=[
-                openai.pydantic_function_tool(GetWeatherArgs),
-                openai.pydantic_function_tool(
+                seg.pydantic_function_tool(GetWeatherArgs),
+                seg.pydantic_function_tool(
                     GetStockPrice, name="get_stock_price", description="Fetch the latest price for a given ticker"
                 ),
             ],
@@ -757,7 +753,7 @@ def test_parse_multiple_pydantic_tools(
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_strict_tools(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_strict_tools(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     completion = make_snapshot_request(
         lambda c: c.chat.completions.parse(
             model="gpt-4o-2024-08-06",
@@ -830,7 +826,7 @@ def test_parse_strict_tools(client: OpenAI, respx2_mock: MockRouter, monkeypatch
     )
 
 
-def test_parse_non_strict_tools(client: OpenAI) -> None:
+def test_parse_non_strict_tools(client: SEG) -> None:
     with pytest.raises(
         ValueError, match="`get_weather` is not strict. Only `strict` function tools can be auto-parsed"
     ):
@@ -850,7 +846,7 @@ def test_parse_non_strict_tools(client: OpenAI) -> None:
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_parse_pydantic_raw_response(client: OpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_pydantic_raw_response(client: SEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch) -> None:
     class Location(BaseModel):
         city: str
         temperature: float
@@ -929,7 +925,7 @@ ParsedChatCompletion(
 @pytest.mark.respx2(base_url=base_url)
 @pytest.mark.asyncio
 async def test_async_parse_pydantic_raw_response(
-    async_client: AsyncOpenAI, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
+    async_client: AsyncSEG, respx2_mock: MockRouter, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     class Location(BaseModel):
         city: str
@@ -1007,8 +1003,8 @@ ParsedChatCompletion(
 
 
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
-def test_parse_method_in_sync(sync: bool, client: OpenAI, async_client: AsyncOpenAI) -> None:
-    checking_client: OpenAI | AsyncOpenAI = client if sync else async_client
+def test_parse_method_in_sync(sync: bool, client: SEG, async_client: AsyncSEG) -> None:
+    checking_client: SEG | AsyncSEG = client if sync else async_client
 
     assert_signatures_in_sync(
         checking_client.chat.completions.create,

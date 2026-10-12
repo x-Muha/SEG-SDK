@@ -38,7 +38,7 @@ def assert_python_39_rejected(wheel: Path) -> None:
     if platform.python_version_tuple()[:2] != ("3", "9"):
         raise RuntimeError(f"The resolver check must run on Python 3.9, found {sys.version.split()[0]}")
 
-    with tempfile.TemporaryDirectory(prefix="openai-python-version-wheel-") as directory:
+    with tempfile.TemporaryDirectory(prefix="seg-python-version-wheel-") as directory:
         environment_path = Path(directory) / "venv"
         subprocess.run([sys.executable, "-m", "venv", str(environment_path)], check=True)
         python = environment_path / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")

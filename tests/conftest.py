@@ -8,8 +8,8 @@ import httpx2
 import pytest
 from pytest_asyncio import is_async_test
 
-from openai import OpenAI, AsyncOpenAI, DefaultHttpx2Client, DefaultAioHttpClient, DefaultAsyncHttpx2Client
-from openai._utils import is_dict
+from seg import SEG, AsyncSEG, DefaultHttpx2Client, DefaultAioHttpClient, DefaultAsyncHttpx2Client
+from seg._utils import is_dict
 
 if TYPE_CHECKING:
     from _pytest.fixtures import FixtureRequest  # pyright: ignore[reportPrivateImportUsage]
@@ -18,7 +18,7 @@ pytest_plugins = ["tests.respx2.plugin"]
 
 pytest.register_assert_rewrite("tests.utils")
 
-logging.getLogger("openai").setLevel(logging.DEBUG)
+logging.getLogger("seg").setLevel(logging.DEBUG)
 
 
 # automatically add `pytest.mark.asyncio()` to all of our async tests
@@ -46,24 +46,22 @@ def pytest_collection_modifyitems(items: list[pytest.Function]) -> None:
 
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
-test_http_client = os.environ.get("OPENAI_TEST_HTTP_CLIENT", "httpx2")
+test_http_client = os.environ.get("SEG_TEST_HTTP_CLIENT", "httpx2")
 
 api_key = "My API Key"
-admin_api_key = "My Admin API Key"
 
 
 @pytest.fixture(scope="session")
-def client(request: FixtureRequest) -> Iterator[OpenAI]:
+def client(request: FixtureRequest) -> Iterator[SEG]:
     strict = getattr(request, "param", True)
     if not isinstance(strict, bool):
         raise TypeError(f"Unexpected fixture parameter type {type(strict)}, expected {bool}")
 
     http_client = DefaultHttpx2Client() if test_http_client == "httpx2" else None
 
-    with OpenAI(
+    with SEG(
         base_url=base_url,
         api_key=api_key,
-        admin_api_key=admin_api_key,
         _strict_response_validation=strict,
         http_client=http_client,
     ) as client:
@@ -71,7 +69,7 @@ def client(request: FixtureRequest) -> Iterator[OpenAI]:
 
 
 @pytest.fixture(scope="session")
-async def async_client(request: FixtureRequest) -> AsyncIterator[AsyncOpenAI]:
+async def async_client(request: FixtureRequest) -> AsyncIterator[AsyncSEG]:
     param = getattr(request, "param", True)
 
     # defaults
@@ -93,10 +91,9 @@ async def async_client(request: FixtureRequest) -> AsyncIterator[AsyncOpenAI]:
     if http_client is None and test_http_client == "httpx2":
         http_client = DefaultAsyncHttpx2Client()
 
-    async with AsyncOpenAI(
+    async with AsyncSEG(
         base_url=base_url,
         api_key=api_key,
-        admin_api_key=admin_api_key,
         _strict_response_validation=strict,
         http_client=http_client,
     ) as client:

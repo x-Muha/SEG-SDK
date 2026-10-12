@@ -3,8 +3,8 @@ from typing import Any, Dict, cast
 
 import pytest
 
-from openai._utils import SensitiveHeadersFilter
-from openai._utils._logs import setup_logging
+from seg._utils import SensitiveHeadersFilter
+from seg._utils._logs import setup_logging
 
 
 @pytest.fixture
@@ -106,11 +106,11 @@ def test_standard_debug_msg(logger_with_filter: logging.Logger, caplog: pytest.L
 def test_sdk_log_level_preserves_transport_configuration(
     setting: str, level: int, transport_level: int, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    sdk_logger = logging.getLogger("openai")
+    sdk_logger = logging.getLogger("seg")
     transport_logger = logging.getLogger("httpx2")
     monkeypatch.setattr(sdk_logger, "level", sdk_logger.level)
     monkeypatch.setattr(transport_logger, "level", transport_level)
-    monkeypatch.setenv("OPENAI_LOG", setting)
+    monkeypatch.setenv("SEG_LOG", setting)
 
     setup_logging()
 

@@ -25,12 +25,7 @@
       }
     }
   },
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "22.22.3",
-      "pnpmVersion": "11.19.0"
-    }
-  }
+  "features": {}
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},

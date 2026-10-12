@@ -2,15 +2,15 @@
 
 import asyncio
 
-from openai import AsyncOpenAI
+from seg import AsyncSEG
 
-# gets API Key from environment variable OPENAI_API_KEY
-client = AsyncOpenAI()
+# gets API Key from environment variable SEG_API_KEY
+client = AsyncSEG()
 
 
 async def main() -> None:
     stream = await client.chat.completions.create(
-        model="gpt-5.5",
+        model="Qwen/Qwen3-0.6B",
         messages=[
             {
                 "role": "user",

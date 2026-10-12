@@ -3,8 +3,8 @@ from __future__ import annotations
 import rich
 from pydantic import BaseModel
 
-import openai
-from openai import OpenAI
+import seg
+from seg import SEG
 
 
 class GetWeather(BaseModel):
@@ -12,11 +12,11 @@ class GetWeather(BaseModel):
     country: str
 
 
-client = OpenAI()
+client = SEG()
 
 
 with client.chat.completions.stream(
-    model="gpt-4o-2024-08-06",
+    model="Qwen/Qwen3-0.6B",
     messages=[
         {
             "role": "user",
@@ -26,7 +26,7 @@ with client.chat.completions.stream(
     tools=[
         # because the tool is built with `pydantic_function_tool(...)`, the returned tool calls
         # will be automatically deserialized into this `GetWeather` type
-        openai.pydantic_function_tool(GetWeather, name="get_weather"),
+        seg.pydantic_function_tool(GetWeather, name="get_weather"),
     ],
     parallel_tool_calls=True,
 ) as stream:

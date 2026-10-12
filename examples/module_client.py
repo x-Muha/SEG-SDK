@@ -1,15 +1,15 @@
-import openai
+import seg
 
-# will default to `os.environ['OPENAI_API_KEY']` if not explicitly set
-openai.api_key = "..."
+# will default to `os.environ['SEG_API_KEY']` if not explicitly set
+seg.api_key = "..."
 
-# all client options can be configured just like the `OpenAI` instantiation counterpart
-openai.base_url = "https://..."
-openai.default_headers = {"x-foo": "true"}
+# all client options can be configured just like the `SEG` instantiation counterpart
+seg.base_url = "https://..."
+seg.default_headers = {"x-foo": "true"}
 
 # all API calls work in the exact same fashion as well
-stream = openai.chat.completions.create(
-    model="gpt-5.6",
+stream = seg.chat.completions.create(
+    model="Qwen/Qwen3-0.6B",
     messages=[
         {
             "role": "user",

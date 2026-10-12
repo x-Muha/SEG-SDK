@@ -5,8 +5,8 @@ from typing import Union
 
 import pydantic
 
-from openai import _compat
-from openai._utils._json import openapi_dumps
+from seg import _compat
+from seg._utils._json import openapi_dumps
 
 
 class TestOpenapiDumps:

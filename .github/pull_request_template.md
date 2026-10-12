@@ -1,8 +1,8 @@
 <!-- Pull requests are limited to repository collaborators. -->
 <!-- For community bug reports and feature requests, open an issue: -->
-<!-- https://github.com/openai/openai-python/issues -->
+<!-- https://github.com/sovereigneg/seg-sdk/issues -->
 <!-- Read the contribution policy and development guide: -->
-<!-- https://github.com/openai/openai-python/blob/main/CONTRIBUTING.md -->
+<!-- https://github.com/sovereigneg/seg-sdk/blob/main/CONTRIBUTING.md -->
 
 ## Changes being requested
 

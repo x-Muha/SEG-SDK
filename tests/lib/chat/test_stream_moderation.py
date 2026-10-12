@@ -6,10 +6,10 @@ from typing import Any
 import httpx2
 import pytest
 
-from openai import OpenAI, AsyncOpenAI
+from seg import SEG, AsyncSEG
 from tests.respx2 import MockRouter
-from openai.lib.streaming.chat import ChatCompletionStreamEvent
-from openai.types.chat.chat_completion import Moderation
+from seg.lib.streaming.chat import ChatCompletionStreamEvent
+from seg.types.chat.chat_completion import Moderation
 
 from ...conftest import base_url
 
@@ -37,8 +37,8 @@ def moderation_result(*, flagged: bool) -> dict[str, Any]:
 async def test_stream_moderation(
     sync: bool,
     scenario: str,
-    client: OpenAI,
-    async_client: AsyncOpenAI,
+    client: SEG,
+    async_client: AsyncSEG,
     respx2_mock: MockRouter,
 ) -> None:
     success = {"input": moderation_result(flagged=False), "output": moderation_result(flagged=True)}

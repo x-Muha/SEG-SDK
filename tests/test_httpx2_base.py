@@ -12,8 +12,8 @@ from typing_extensions import override
 import httpx2
 import pytest
 
-import openai
-from openai import OpenAI, AsyncOpenAI
+import seg
+from seg import SEG, AsyncSEG
 from tests.respx2 import MockRouter
 
 
@@ -22,7 +22,7 @@ def test_base_import_does_not_load_legacy_httpx() -> None:
         [
             sys.executable,
             "-c",
-            "import sys; import openai; assert 'httpx2' in sys.modules; assert 'httpx' not in sys.modules",
+            "import sys; import seg; assert 'httpx2' in sys.modules; assert 'httpx' not in sys.modules",
         ],
         check=True,
     )
@@ -34,7 +34,7 @@ def test_default_client_and_respx_use_httpx2(respx2_mock: MockRouter) -> None:
 
     with warnings.catch_warnings(record=True) as captured:
         warnings.simplefilter("always")
-        with OpenAI(api_key="test", base_url="https://example.test/v1") as client:
+        with SEG(api_key="test", base_url="https://example.test/v1") as client:
             response = client.models.with_raw_response.list()
 
     assert route.called
@@ -44,22 +44,22 @@ def test_default_client_and_respx_use_httpx2(respx2_mock: MockRouter) -> None:
 
 
 async def test_existing_http_client_helpers_default_to_httpx2() -> None:
-    class SyncHttpClient(openai.DefaultHttpxClient):
+    class SyncHttpClient(seg.DefaultHttpxClient):
         pass
 
-    class AsyncHttpClient(openai.DefaultAsyncHttpxClient):
+    class AsyncHttpClient(seg.DefaultAsyncHttpxClient):
         pass
 
     def handler(request: httpx2.Request) -> httpx2.Response:
         return httpx2.Response(200, json={"object": "list", "data": []}, request=request)
 
     with SyncHttpClient(transport=httpx2.MockTransport(handler), trust_env=False) as http_client:
-        with OpenAI(api_key="test", base_url="https://example.test/v1", http_client=http_client) as client:
+        with SEG(api_key="test", base_url="https://example.test/v1", http_client=http_client) as client:
             response = client.models.with_raw_response.list()
             assert isinstance(response.http_response, httpx2.Response)
 
     async with AsyncHttpClient(transport=httpx2.MockTransport(handler), trust_env=False) as http_client:
-        async with AsyncOpenAI(api_key="test", base_url="https://example.test/v1", http_client=http_client) as client:
+        async with AsyncSEG(api_key="test", base_url="https://example.test/v1", http_client=http_client) as client:
             response = await client.models.with_raw_response.list()
             assert isinstance(response.http_response, httpx2.Response)
 
@@ -81,10 +81,10 @@ async def test_default_aiohttp_client_uses_httpx2() -> None:
     thread = threading.Thread(target=server.serve_forever)
     thread.start()
     try:
-        async with AsyncOpenAI(
+        async with AsyncSEG(
             api_key="test",
             base_url=f"http://127.0.0.1:{server.server_port}/v1",
-            http_client=openai.DefaultAioHttpClient(),
+            http_client=seg.DefaultAioHttpClient(),
             max_retries=0,
         ) as client:
             assert isinstance(client._client, httpx2.AsyncClient)

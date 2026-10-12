@@ -1,253 +1,67 @@
-# Contributing
-
-## Contribution policy
-
-We welcome bug reports, feature requests, minimal reproductions, and root-cause
-analysis through [GitHub issues](https://github.com/openai/openai-python/issues).
-
-**Pull requests are limited to repository collaborators. We do not accept pull
-requests from non-collaborators**, including documentation or example changes.
-If you are not a collaborator, please open an issue instead of preparing a pull
-request. Include the affected version, expected and actual behavior, and a small,
-sanitized reproduction when applicable.
-
-Report suspected security vulnerabilities privately as described in
-[SECURITY.md](SECURITY.md), rather than in issues or pull requests.
-
-The development and pull request instructions below are for maintainers and
-repository collaborators.
-
 ## Setting up the environment
 
-The minimum supported runtime, contributor toolchain, CI matrix, and release
-rules are documented in [PYTHON_VERSION_POLICY.md](./PYTHON_VERSION_POLICY.md).
-Changes to the minimum Python version must keep those surfaces synchronized and
-must include a release note naming the final compatible SDK release.
-
-### With uv
-
-We use [uv](https://docs.astral.sh/uv/) to manage Python, dependencies, and builds.
-Install uv 0.12.1 or newer, Node.js at the version in `.node-version`, and
-the exact pnpm version in `package.json` (`npm install --global pnpm@11.19.0`).
-The Node toolchain is for repository development only, not SDK users or builds.
-Then run:
+This repository uses [uv](https://docs.astral.sh/uv/) to manage dependencies. Install uv, then run:
 
 ```sh
-$ ./scripts/bootstrap
+./scripts/bootstrap
 ```
 
-This installs all SDK extras and Python development tools from `uv.lock`, plus
-the contributor tools from `pnpm-lock.yaml`. Bootstrap requires an already
-installed Node.js and pnpm; it does not download or switch those tools for you.
-Run a
-command with `uv run --locked --all-extras`, or activate `.venv` in your shell.
-Use `uv lock` after changing dependencies, and commit the updated `uv.lock`.
-It is the authoritative lockfile; `uv export` can produce a requirements file
-for tools that need one.
+This creates a `.venv` with the locked development dependencies (ruff, pyright, mypy, pytest).
 
-For Node tooling updates, edit `package.json`, run
-`pnpm install --lockfile-only --ignore-scripts`, review the dependency and
-integrity changes, and commit `pnpm-lock.yaml`. Normal bootstrap uses a frozen
-lockfile. pnpm rejects releases that have not cleared the eight-day cooldown,
-including packages whose registry metadata omits their publication date.
-Pyright runs the local Microsoft package and never invokes npm or
-downloads a runtime. Do not use `npx`, `pnpm dlx`, or Corepack auto-downloads.
+## Repository layout
 
-The default environment uses Pydantic v2. `./scripts/test` also runs the
-Pydantic-v1 suite in a separate, locked environment. To run that lane alone,
-use `./scripts/test-pydantic-v1`.
+- `src/seg/_client.py` — the `SEG` and `AsyncSEG` clients (auth, base URL, retries, options).
+- `src/seg/resources/` — one module per API resource: `chat`, `embeddings`, `images`, `moderations`, `models`, `decisions`.
+- `src/seg/types/` — Pydantic response models and `TypedDict` request params.
+- `src/seg/lib/` — hand-written helpers (structured-output parsing, chat streaming events).
+- `src/seg/_base_client.py` and the other `_` modules — HTTP plumbing shared by every resource.
+- `tests/` — unit tests; HTTP calls are mocked in-process with `respx2`, so no server is needed.
+- `tests/smoke/` — live tests that run only when `TEST_API_BASE_URL` and `SEG_API_KEY` are set.
+- `examples/` — runnable scripts; run them with `uv run python examples/demo.py`.
 
-### Dependency update policy
+## Adding or changing an endpoint
 
-Routine Python, Node-tooling, and GitHub Actions updates have an eight-day cooldown. uv also
-excludes Python distribution artifacts uploaded within the last eight days.
-Dependabot security updates remain enabled and are exempt from Dependabot's
-version-update cooldown.
+1. Add the request params `TypedDict` and response model under `src/seg/types/`, and export them from `src/seg/types/__init__.py`.
+2. Add the method to the resource in `src/seg/resources/` for both the sync and async classes, plus the `WithRawResponse` and `WithStreamingResponse` wrappers at the bottom of the file.
+3. If it is a new resource, register it in `src/seg/_client.py` (client property and the four wrapper classes), `src/seg/resources/__init__.py`, `src/seg/_module_client.py`, and `src/seg/__init__.py`.
+4. Add a mocked test in `tests/api_resources/` and, where it matters, a live case in `tests/smoke/`.
+5. Document it in `api.md` and, if user facing, the README.
 
-The committed `uv.lock` must remain usable outside a contributor's environment:
-registry sources use `https://pypi.org/simple`, and distribution artifacts use
-hashed `https://files.pythonhosted.org/packages/` URLs. If a managed registry
-rewrites those locations, keep its required local security checks enabled. Use
-dependency-update automation or an approved public-lockfile repair that matches
-each exact filename and SHA-256 against upstream metadata; do not substitute
-hosts blindly or commit private registry URLs. The public-source regression test
-in `tests/test_uv_workflows.py` checks this without making network requests.
+Keep the backend as the source of truth: the SovereignEG gateway serves `/v1/chat/completions`,
+`/v1/embeddings`, `/v1/images/generations`, `/v1/moderations`, `/v1/models`, and `/v1/decisions`.
+Do not add client methods for endpoints the backend does not expose.
 
-Do not lower a security-fixed minimum or downgrade a patched lock entry to make
-the cooldown pass. If an urgent fix is too new for uv, request SDK CODEOWNER
-review of the advisory, exact fixed version, upstream provenance, artifact
-hashes, and affected dependency paths. The reviewed PR may add a temporary,
-package-specific `tool.uv.exclude-newer-package` cutoff using a fixed UTC
-timestamp just after the approved artifacts were uploaded. Update only the
-approved package (for example, `uv lock --upgrade-package 'package==version'`),
-retain the security floor in published metadata where applicable, and review
-the resulting lock diff. Record the advisory and an expiry/removal date in the
-PR and remove the exception once those artifacts are eight days old. Do not
-disable the global cutoff or exempt unrelated packages.
-
-For an urgent Node-tooling security fix, obtain the same CODEOWNER review and
-use a temporary, exact `package@version` entry in pnpm's
-`minimumReleaseAgeExclude`. Record the public advisory, integrity/provenance,
-and removal date in the PR. Do not lower an existing security-fixed version,
-disable the global age policy, or enable lifecycle scripts globally.
-
-See [uv's package-specific cutoff documentation](https://docs.astral.sh/uv/reference/settings/#exclude-newer-package)
-and [Dependabot's cooldown policy](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#cooldown).
-
-## Modifying/Adding code
-
-Most of the SDK is generated code. Modifications to code will be persisted between generations, but may
-result in merge conflicts between manual patches and changes from the generator. The generator will never
-modify the contents of the `src/openai/lib/` and `examples/` directories.
-
-## Custom-code budget
-
-The custom-code budget counts additions plus deletions in the remaining patch
-against verified generated output. `.castiron-ratchet.json` defines this repository's
-ceiling. CI uses the checker and budget on main, not the PR's proposed versions.
-
-Budget changes must be in a separate PR modifying **only `.castiron-ratchet.json`**.
-Justify the current usage, proposed ceiling, and why fixing generation is not
-appropriate in the PR description. Increases require a **human approving review**
-and must merge before an SDK change relies on them. Agents may draft proposals,
-but must not approve increases or bypass the gate. Keep default CODEOWNERS.
-Lower the ceiling after cleanup while retaining headroom; decreases must still
-fit the measured usage.
-
-See [custom-code technical details](scripts/castiron/CUSTOM_CODE.md) for accounting,
-local checks, trusted CI, and activation instructions.
-
-## Security requirements for contributions
-
-- Never commit API or admin keys, bearer tokens, webhook secrets, cloud
-  credentials, private keys, publishing credentials, or `.env` files. Load real
-  credentials from environment variables such as `OPENAI_API_KEY`,
-  `OPENAI_ADMIN_KEY`, and `OPENAI_WEBHOOK_SECRET`; use clearly fake values and
-  sanitized data in examples, tests, fixtures, and recorded responses.
-- Redact `Authorization` and `api-key` headers, other credentials, and customer
-  request or response data from logs, exceptions, snapshots, and debug output.
-  Prefer the mock server or mocked HTTP transport over live credentials in tests.
-- Review direct and transitive dependency changes, package provenance, build or
-  install hooks, and diffs to `pyproject.toml`, optional extras,
-  `uv.lock`, and the build dependency group.
-- Pin third-party GitHub Actions to reviewed full commit SHAs, minimize job
-  permissions, and keep secrets and write-capable tokens away from untrusted
-  pull-request code. Protect release-app credentials and preserve the separate
-  build and upload jobs, protected publishing environment, and PyPI Trusted
-  Publishing. Limit OIDC access to the trusted publishing job.
-- Request SDK CODEOWNER review for authentication, X.509, webhook verification,
-  network destinations, redirects, TLS, cloud metadata, file handling,
-  serialization, dependency, CI, and release changes. Add synchronous and
-  asynchronous regression tests as applicable, including credential redaction
-  and invalid signatures.
-- Report suspected vulnerabilities privately through the process in
-  [SECURITY.md](./SECURITY.md), never through public issues or pull requests.
-
-## Adding and running examples
-
-All files in the `examples/` directory are not modified by the generator and can be freely edited or added to.
-
-```py
-# add an example to examples/<your-example>.py
-
-#!/usr/bin/env -S uv run python
-…
-```
+## Running checks
 
 ```sh
-$ chmod +x examples/<your-example>.py
-# run the example against your api
-$ ./examples/<your-example>.py
+./scripts/lint     # ruff, pyright, mypy, import check
+./scripts/format   # ruff format + autofix
+./scripts/test     # pytest (Pydantic v2), then the Pydantic v1 environment
+./scripts/build    # build the sdist and wheel into dist/
+```
+
+To run the live smoke tests against an API:
+
+```sh
+SEG_API_KEY=sk-... TEST_API_BASE_URL=https://sovereigneg.com/v1 uv run pytest tests/smoke -o addopts=
 ```
 
 ## Using the repository from source
 
-If you’d like to use the repository from source, you can either install from git or link to a cloned repository:
-
-To install via git:
-
 ```sh
-$ pip install git+ssh://git@github.com/openai/openai-python.git
+pip install git+ssh://git@github.com/sovereigneg/seg-sdk.git
+# or, for a local checkout
+pip install -e /path/to/seg-sdk
 ```
 
-Alternatively, you can build from source and install the wheel file:
+## Releasing
 
-Building this package will create two files in the `dist/` directory, a `.tar.gz` containing the source files and a `.whl` that can be used to install the package efficiently.
+1. Bump `version` in `pyproject.toml` and `__version__` in `src/seg/_version.py`, and add a `CHANGELOG.md` entry.
+2. Run `uv lock` so the lock file records the new version, then run the checks above.
+3. Tag and publish a GitHub release; the `Publish PyPI` workflow builds the distributions and uploads
+   `seg-sdk` through PyPI Trusted Publishing (configure the PyPI project to trust the `publish` environment first).
 
-To create a distributable version of the library, all you have to do is run this command:
+## Security
 
-```sh
-$ ./scripts/build
-```
-
-The build script exports hash-checked build requirements from `uv.lock` before
-building the sdist and wheel. It does not install the development toolchain.
-
-Then to install:
-
-```sh
-$ pip install ./path-to-wheel-file.whl
-```
-
-## Running tests
-
-The mock server uses [the OpenAI Steady fork](https://github.com/openai-oss-forks/steady).
-`scripts/steady/manifest.json` is the single source of dependency pins: the
-Steady Git commit and source digest, plus the Deno version and runtime checksums. `./scripts/steady/install` fetches that source, verifies the runtime,
-and caches dependencies using the fork's frozen Deno lockfile. It requires
-Git, Node.js, curl, unzip, and sha256sum or shasum. The installation supports
-macOS and Linux on x64/ARM64, and Windows x64 through Git Bash.
-
-`./scripts/run-steady` verifies the local source and runtime, then runs without
-downloading dependencies. Pass a local OpenAPI specification path. To update
-Steady, review the fork commit and run
-`node scripts/steady/update.cjs <full-commit-sha>`. This updates the manifest
-with the commit and its source digest; no launcher or test edits are needed.
-Then run `./scripts/steady/install`. Review the release checksums when changing Deno.
-Run `node scripts/steady/test.cjs` to check the
-installation, integrity checks, and mock-server lifecycle.
-
-
-Most tests require you to [set up a mock server](https://github.com/openai-oss-forks/steady) against the OpenAPI spec to run the tests.
-
-`./scripts/bootstrap` installs the pinned Steady source and Deno runtime. `./scripts/test` starts it automatically when no mock server is running.
-Neither `./scripts/test` nor `./scripts/mock` downloads mock tooling. If the local
-tool is missing, rerun bootstrap. `TEST_API_BASE_URL` and an already-running
-mock server remain supported. To start the server yourself:
-
-```sh
-$ ./scripts/mock
-```
-
-```sh
-$ ./scripts/test
-```
-
-## Linting and formatting
-
-This repository uses [Ruff](https://github.com/astral-sh/ruff) to lint and format Python code.
-
-To lint:
-
-```sh
-$ ./scripts/lint
-```
-
-To format and fix all ruff issues automatically:
-
-```sh
-$ ./scripts/format
-```
-
-## Publishing and releases
-
-Changes made to this repository via the automated release PR pipeline should publish to PyPI automatically. If
-the changes aren't made through the automated pipeline, you may want to make releases manually.
-
-### Publish with a GitHub workflow
-
-You can release to package managers by using [the `Publish PyPI` GitHub action](https://www.github.com/openai/openai-python/actions/workflows/publish-pypi.yml). PyPI publishing uses Trusted Publishing, so the PyPI project must trust this repository's GitHub Actions workflow and the `publish` environment.
-
-### Publish manually
-
-If you need to retry a PyPI release, use the `Publish PyPI` GitHub action. Local manual publishing is not the standard release path because the GitHub workflow uses OIDC instead of a long-lived PyPI token.
+Never commit real API keys. Read `SEG_API_KEY` from the environment and use clearly fake values in
+tests and examples. See [SECURITY.md](SECURITY.md) for reporting vulnerabilities.

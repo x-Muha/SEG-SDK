@@ -8,15 +8,15 @@ from typing_extensions import Required, Annotated, TypedDict, NotRequired
 
 import pytest
 
-from openai._types import Base64FileInput, omit, not_given
-from openai._utils import (
+from seg._types import Base64FileInput, omit, not_given
+from seg._utils import (
     PropertyInfo,
     transform as _transform,
     parse_datetime,
     async_transform as _async_transform,
 )
-from openai._compat import PYDANTIC_V1
-from openai._models import BaseModel
+from seg._compat import PYDANTIC_V1
+from seg._models import BaseModel
 
 _T = TypeVar("_T")
 
@@ -324,9 +324,9 @@ class ModelNestedObjects(BaseModel):
 @parametrize
 @pytest.mark.asyncio
 async def test_pydantic_nested_objects(use_async: bool) -> None:
-    model = ModelNestedObjects.construct(nested={"foo": "openai"})
+    model = ModelNestedObjects.construct(nested={"foo": "seg"})
     assert isinstance(model.nested, MyModel)
-    assert cast(Any, await transform(model, Any, use_async)) == {"nested": {"foo": "openai"}}
+    assert cast(Any, await transform(model, Any, use_async)) == {"nested": {"foo": "seg"}}
 
 
 class ModelWithDefaultField(BaseModel):

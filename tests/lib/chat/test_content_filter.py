@@ -6,7 +6,7 @@ import httpx2
 import pytest
 from pydantic import BaseModel
 
-from openai import OpenAI, AsyncOpenAI, ContentFilterFinishReasonError
+from seg import SEG, AsyncSEG, ContentFilterFinishReasonError
 from tests.respx2 import MockRouter
 
 from ...conftest import base_url
@@ -28,7 +28,7 @@ def test_content_filter_error_without_completion() -> None:
 @pytest.mark.parametrize("sync", [True, False], ids=["sync", "async"])
 @pytest.mark.respx2(base_url=base_url)
 async def test_parse_content_filter_completion(
-    sync: bool, client: OpenAI, async_client: AsyncOpenAI, respx2_mock: MockRouter
+    sync: bool, client: SEG, async_client: AsyncSEG, respx2_mock: MockRouter
 ) -> None:
     respx2_mock.post("/chat/completions").mock(
         return_value=httpx2.Response(
@@ -67,8 +67,8 @@ async def test_parse_content_filter_completion(
 async def test_stream_content_filter_completion(
     sync: bool,
     partial_content: str | None,
-    client: OpenAI,
-    async_client: AsyncOpenAI,
+    client: SEG,
+    async_client: AsyncSEG,
     respx2_mock: MockRouter,
 ) -> None:
     choices: list[dict[str, object]] = []

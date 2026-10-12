@@ -2,18 +2,18 @@
 
 import asyncio
 
-from openai import OpenAI, AsyncOpenAI
+from seg import SEG, AsyncSEG
 
-# This script assumes you have the OPENAI_API_KEY environment variable set to a valid OpenAI API key.
+# This script assumes you have the SEG_API_KEY environment variable set to a valid SEG API key.
 #
 # You can run this script from the root directory like so:
 # `python examples/streaming.py`
 
 
 def sync_main() -> None:
-    client = OpenAI()
+    client = SEG()
     response = client.chat.completions.create(
-        model="gpt-5.5",
+        model="Qwen/Qwen3-0.6B",
         messages=[
             {
                 "role": "user",
@@ -34,9 +34,9 @@ def sync_main() -> None:
 
 
 async def async_main() -> None:
-    client = AsyncOpenAI()
+    client = AsyncSEG()
     response = await client.chat.completions.create(
-        model="gpt-5.5",
+        model="Qwen/Qwen3-0.6B",
         messages=[
             {
                 "role": "user",

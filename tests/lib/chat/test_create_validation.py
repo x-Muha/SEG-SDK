@@ -5,14 +5,14 @@ from typing import Any, cast
 import pytest
 import pydantic
 
-from openai import OpenAI, AsyncOpenAI
+from seg import SEG, AsyncSEG
 
 
 class TestCompletions:
     parametrize = pytest.mark.parametrize("client", [False, True], indirect=True, ids=["loose", "strict"])
 
     @parametrize
-    def test_method_create_disallows_pydantic(self, client: OpenAI) -> None:
+    def test_method_create_disallows_pydantic(self, client: SEG) -> None:
         class MyModel(pydantic.BaseModel):
             a: str
 
@@ -35,7 +35,7 @@ class TestAsyncCompletions:
     )
 
     @parametrize
-    async def test_method_create_disallows_pydantic(self, async_client: AsyncOpenAI) -> None:
+    async def test_method_create_disallows_pydantic(self, async_client: AsyncSEG) -> None:
         class MyModel(pydantic.BaseModel):
             a: str
 

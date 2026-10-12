@@ -5,9 +5,9 @@ import json
 import httpx2
 import pytest
 
-from openai import OpenAI, AsyncOpenAI
+from seg import SEG, AsyncSEG
 from tests.respx2 import MockRouter
-from openai.types.chat import ChatCompletionToolUnionParam
+from seg.types.chat import ChatCompletionToolUnionParam
 
 from ...conftest import base_url
 
@@ -62,7 +62,7 @@ def mock_tool_call(
 @pytest.mark.parametrize("use_async", [False, True])
 @pytest.mark.asyncio
 async def test_parse_preserves_single_pass_tools(
-    client: OpenAI, async_client: AsyncOpenAI, respx2_mock: MockRouter, use_async: bool
+    client: SEG, async_client: AsyncSEG, respx2_mock: MockRouter, use_async: bool
 ) -> None:
     tools = iter([mock_tool_call(respx2_mock)])
     if use_async:
@@ -80,7 +80,7 @@ async def test_parse_preserves_single_pass_tools(
 @pytest.mark.parametrize("strict", [False, True])
 @pytest.mark.asyncio
 async def test_stream_preserves_single_pass_tools(
-    client: OpenAI, async_client: AsyncOpenAI, respx2_mock: MockRouter, use_async: bool, strict: bool
+    client: SEG, async_client: AsyncSEG, respx2_mock: MockRouter, use_async: bool, strict: bool
 ) -> None:
     tools = iter([mock_tool_call(respx2_mock, streaming=True, strict=strict)])
     if use_async:

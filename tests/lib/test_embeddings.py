@@ -10,12 +10,12 @@ from typing_extensions import Literal
 import httpx2
 import pytest
 
-from openai import OpenAI, AsyncOpenAI
+from seg import SEG, AsyncSEG
+from seg._types import Omit, NotGiven, omit, not_given
+from seg._models import construct_type_unchecked
 from tests.respx2 import MockRouter
-from openai._types import Omit, NotGiven, omit, not_given
-from openai._models import construct_type_unchecked
-from openai.lib._parsing import _embeddings as embeddings_parser
-from openai.types.create_embedding_response import CreateEmbeddingResponse
+from seg.lib._parsing import _embeddings as embeddings_parser
+from seg.types.create_embedding_response import CreateEmbeddingResponse
 
 VALUES = [0.125, -2.5, 3.75]
 ENCODED = base64.b64encode(array.array("f", VALUES).tobytes()).decode("ascii")
@@ -153,7 +153,7 @@ def assert_request_and_response(
 @pytest.mark.parametrize("encoding_format", [omit, "float", "base64"], ids=["default", "float", "base64"])
 @pytest.mark.parametrize("mode", ["normal", "raw", "streaming"])
 def test_sync_create_uses_decoder(
-    client: OpenAI, respx2_mock: MockRouter, encoding_format: EncodingFormat, mode: ResponseMode
+    client: SEG, respx2_mock: MockRouter, encoding_format: EncodingFormat, mode: ResponseMode
 ) -> None:
     vector = VALUES if encoding_format == "float" else ENCODED
     route = respx2_mock.post(f"{str(client.base_url).rstrip('/')}/embeddings").mock(
@@ -185,7 +185,7 @@ def test_sync_create_uses_decoder(
 @pytest.mark.parametrize("encoding_format", [omit, "float", "base64"], ids=["default", "float", "base64"])
 @pytest.mark.parametrize("mode", ["normal", "raw", "streaming"])
 async def test_async_create_uses_decoder(
-    async_client: AsyncOpenAI, respx2_mock: MockRouter, encoding_format: EncodingFormat, mode: ResponseMode
+    async_client: AsyncSEG, respx2_mock: MockRouter, encoding_format: EncodingFormat, mode: ResponseMode
 ) -> None:
     vector = VALUES if encoding_format == "float" else ENCODED
     route = respx2_mock.post(f"{str(async_client.base_url).rstrip('/')}/embeddings").mock(

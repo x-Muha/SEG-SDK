@@ -8,9 +8,9 @@ import pytest
 import pydantic
 from pydantic import Field
 
-from openai._utils import PropertyInfo
-from openai._compat import PYDANTIC_V1, parse_obj, model_dump, model_json
-from openai._models import DISCRIMINATOR_CACHE, BaseModel, EagerIterable, construct_type
+from seg._utils import PropertyInfo
+from seg._compat import PYDANTIC_V1, parse_obj, model_dump, model_json
+from seg._models import DISCRIMINATOR_CACHE, BaseModel, EagerIterable, construct_type
 
 
 class BasicModel(BaseModel):

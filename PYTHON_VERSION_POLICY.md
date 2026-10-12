@@ -1,6 +1,6 @@
 # Python Version Support Policy
 
-The OpenAI Python SDK supports every fully released CPython version that has
+The SEG Python SDK supports every fully released CPython version that has
 not reached upstream end of life. The oldest supported version is declared by
 `requires-python` in [`pyproject.toml`](pyproject.toml), documented in the
 README, and tested on every pull request.

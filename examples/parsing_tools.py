@@ -4,8 +4,8 @@ from typing import List, Union
 import rich
 from pydantic import BaseModel
 
-import openai
-from openai import OpenAI
+import seg
+from seg import SEG
 
 
 class Table(str, Enum):
@@ -55,10 +55,10 @@ class Query(BaseModel):
     order_by: OrderBy
 
 
-client = OpenAI()
+client = SEG()
 
 completion = client.chat.completions.parse(
-    model="gpt-4o-2024-08-06",
+    model="Qwen/Qwen3-0.6B",
     messages=[
         {
             "role": "system",
@@ -70,7 +70,7 @@ completion = client.chat.completions.parse(
         },
     ],
     tools=[
-        openai.pydantic_function_tool(Query),
+        seg.pydantic_function_tool(Query),
     ],
 )
 

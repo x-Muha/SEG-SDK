@@ -2,8 +2,8 @@ import operator
 from typing import Any
 from typing_extensions import override
 
-from openai._utils import LazyProxy
-from openai._extras._common import MissingDependencyError
+from seg._utils import LazyProxy
+from seg._extras._common import MissingDependencyError
 
 
 class RecursiveLazyProxy(LazyProxy[Any]):

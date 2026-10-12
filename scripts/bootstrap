@@ -4,23 +4,11 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-if [ -f "Brewfile" ] && [ "$(uname -s)" = "Darwin" ] && [ "${SKIP_BREW:-}" != "1" ] && [ -t 0 ]; then
-  brew bundle check >/dev/null 2>&1 || {
-    echo -n "==> Install Homebrew dependencies? (y/N): "
-    read -r response
-    case "$response" in
-      [yY][eE][sS]|[yY])
-        brew bundle
-        ;;
-      *)
-        ;;
-    esac
-    echo
-  }
+if ! command -v uv >/dev/null 2>&1; then
+  echo 'uv is required. Install it from https://docs.astral.sh/uv/ then rerun ./scripts/bootstrap.' >&2
+  exit 1
 fi
 
 echo "==> Installing Python dependencies…"
 
 uv sync --locked --all-extras
-
-./scripts/bootstrap-node

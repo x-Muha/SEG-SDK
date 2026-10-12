@@ -9,8 +9,8 @@ body:
   - type: checkboxes
     id: non_api
     attributes:
-      label: Confirm this is an issue with the Python library and not an underlying OpenAI API
-      description: Issues with the underlying OpenAI API should be reported on our [Developer Community](https://community.openai.com/c/api/7)
+      label: Confirm this is an issue with the Python library and not an underlying SEG API
+      description: Issues with the underlying SEG API should be reported on our [Developer Community](https://sovereigneg.com/support)
       options:
         - label: This is an issue with the Python library
           required: true
@@ -59,6 +59,6 @@ body:
     id: lib-version
     attributes:
       label: Library version
-      placeholder: openai v1.0.1
+      placeholder: seg-sdk v0.1.0
     validations:
       required: true

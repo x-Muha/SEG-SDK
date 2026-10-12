@@ -5,14 +5,14 @@ import os
 import httpx2
 import pytest
 
-from openai import OpenAI, AsyncOpenAI, APITimeoutError
+from seg import SEG, AsyncSEG, APITimeoutError
 from tests.respx2 import MockRouter
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_respx2_preserves_native_sync_family_and_request_content(client: OpenAI, respx2_mock: MockRouter) -> None:
+def test_respx2_preserves_native_sync_family_and_request_content(client: SEG, respx2_mock: MockRouter) -> None:
     def mirror(request: httpx2.Request) -> httpx2.Response:
         assert request.url.path == "/upload"
         assert request.headers["x-test"] == "sync"
@@ -32,7 +32,7 @@ def test_respx2_preserves_native_sync_family_and_request_content(client: OpenAI,
 
 @pytest.mark.respx2(base_url=base_url)
 async def test_respx2_preserves_native_async_family_and_request_content(
-    async_client: AsyncOpenAI, respx2_mock: MockRouter
+    async_client: AsyncSEG, respx2_mock: MockRouter
 ) -> None:
     async def mirror(request: httpx2.Request) -> httpx2.Response:
         assert request.url.path == "/upload"
@@ -52,7 +52,7 @@ async def test_respx2_preserves_native_async_family_and_request_content(
 
 
 @pytest.mark.respx2(base_url=base_url)
-def test_respx2_maps_timeout_to_native_family(client: OpenAI, respx2_mock: MockRouter) -> None:
+def test_respx2_maps_timeout_to_native_family(client: SEG, respx2_mock: MockRouter) -> None:
     respx2_mock.get("/models").mock(side_effect=httpx2.ReadTimeout("mock timeout"))
 
     with pytest.raises(APITimeoutError) as exc_info:

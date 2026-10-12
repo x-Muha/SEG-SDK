@@ -1,14 +1,14 @@
 #!/usr/bin/env -S uv run python
 
-from openai import OpenAI
+from seg import SEG
 
-# gets API Key from environment variable OPENAI_API_KEY
-client = OpenAI()
+# gets API Key from environment variable SEG_API_KEY
+client = SEG()
 
 # Non-streaming:
 print("----- standard request -----")
 completion = client.chat.completions.create(
-    model="gpt-5.5",
+    model="Qwen/Qwen3-0.6B",
     messages=[
         {
             "role": "user",
@@ -21,7 +21,7 @@ print(completion.choices[0].message.content)
 # Streaming:
 print("----- streaming request -----")
 stream = client.chat.completions.create(
-    model="gpt-5.5",
+    model="Qwen/Qwen3-0.6B",
     messages=[
         {
             "role": "user",
@@ -40,7 +40,7 @@ print()
 # Response headers:
 print("----- custom response headers test -----")
 response = client.chat.completions.with_raw_response.create(
-    model="gpt-5.5",
+    model="Qwen/Qwen3-0.6B",
     messages=[
         {
             "role": "user",
