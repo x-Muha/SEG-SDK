@@ -157,7 +157,7 @@ class _ModuleClient(SEG):
     @override
     def base_url(self) -> _httpx.URL:
         if base_url is not None:
-            return _normalize_httpx_url(base_url)
+            return self._enforce_trailing_slash(_normalize_httpx_url(base_url))
 
         return super().base_url
 

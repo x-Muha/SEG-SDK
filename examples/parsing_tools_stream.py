@@ -16,7 +16,7 @@ client = SEG()
 
 
 with client.chat.completions.stream(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[
         {
             "role": "user",

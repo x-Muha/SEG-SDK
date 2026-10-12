@@ -40,11 +40,15 @@ Do not add client methods for endpoints the backend does not expose.
 ./scripts/build    # build the sdist and wheel into dist/
 ```
 
-To run the live smoke tests against an API:
+To run the live smoke tests against an API (set `SEG_SMOKE_CHAT_MODEL` if the default chat model,
+`llama-3.1-8b-instruct`, is not in that deployment's catalog):
 
 ```sh
 SEG_API_KEY=sk-... TEST_API_BASE_URL=https://sovereigneg.com/v1 uv run pytest tests/smoke -o addopts=
 ```
+
+For a local Docker backend prefer `http://127.0.0.1:8000/v1` over `localhost`: on Windows, httpx tries
+IPv6 first and the initial request to `localhost` can take a couple of seconds.
 
 ## Using the repository from source
 

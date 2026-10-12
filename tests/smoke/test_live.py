@@ -24,7 +24,7 @@ pytestmark = pytest.mark.skipif(
 )
 
 # Any chat model from the catalog works; this one is the cheapest in the public catalog.
-CHAT_MODEL = os.environ.get("SEG_SMOKE_CHAT_MODEL", "Qwen/Qwen3-0.6B")
+CHAT_MODEL = os.environ.get("SEG_SMOKE_CHAT_MODEL", "llama-3.1-8b-instruct")
 
 
 @pytest.fixture(scope="module")

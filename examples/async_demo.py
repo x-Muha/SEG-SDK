@@ -10,7 +10,7 @@ client = AsyncSEG()
 
 async def main() -> None:
     stream = await client.chat.completions.create(
-        model="Qwen/Qwen3-0.6B",
+        model="llama-3.1-8b-instruct",
         messages=[
             {
                 "role": "user",

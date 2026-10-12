@@ -22,7 +22,7 @@ CHAT_COMPLETION: dict[str, Any] = {
     "id": "chatcmpl-123",
     "object": "chat.completion",
     "created": 1_700_000_000,
-    "model": "Qwen/Qwen3-0.6B",
+    "model": "llama-3.1-8b-instruct",
     "choices": [
         {
             "index": 0,
@@ -103,7 +103,7 @@ MODERATION: dict[str, Any] = {
 }
 
 MODEL: dict[str, Any] = {
-    "id": "Qwen/Qwen3-0.6B",
+    "id": "llama-3.1-8b-instruct",
     "object": "model",
     "created": 1_700_000_000,
     "owned_by": "sovereigneg",
@@ -163,7 +163,7 @@ class TestChatCompletions:
         route = respx2_mock.post("/chat/completions").mock(return_value=httpx2.Response(200, json=CHAT_COMPLETION))
 
         completion = client.chat.completions.create(
-            model="Qwen/Qwen3-0.6B",
+            model="llama-3.1-8b-instruct",
             messages=[{"role": "user", "content": "hi"}],
             max_tokens=300,
             temperature=0.2,
@@ -179,7 +179,7 @@ class TestChatCompletions:
         assert request.headers["Authorization"] == "Bearer My API Key"
         assert request.headers["Content-Type"] == "application/json"
         assert _sent_json(route) == {
-            "model": "Qwen/Qwen3-0.6B",
+            "model": "llama-3.1-8b-instruct",
             "messages": [{"role": "user", "content": "hi"}],
             "max_tokens": 300,
             "temperature": 0.2,
@@ -212,7 +212,7 @@ class TestChatCompletions:
         )
 
         stream = client.chat.completions.create(
-            model="Qwen/Qwen3-0.6B",
+            model="llama-3.1-8b-instruct",
             messages=[{"role": "user", "content": "hi"}],
             stream=True,
         )
@@ -230,7 +230,7 @@ class TestChatCompletions:
         )
 
         response = client.chat.completions.with_raw_response.create(
-            model="Qwen/Qwen3-0.6B", messages=[{"role": "user", "content": "hi"}]
+            model="llama-3.1-8b-instruct", messages=[{"role": "user", "content": "hi"}]
         )
 
         assert response.request_id == "req_abc"
@@ -241,7 +241,7 @@ class TestChatCompletions:
         respx2_mock.post("/chat/completions").mock(return_value=httpx2.Response(200, json=CHAT_COMPLETION))
 
         completion = await async_client.chat.completions.create(
-            model="Qwen/Qwen3-0.6B", messages=[{"role": "user", "content": "hi"}]
+            model="llama-3.1-8b-instruct", messages=[{"role": "user", "content": "hi"}]
         )
 
         assert completion.choices[0].message.content == "Hello!"
@@ -301,16 +301,16 @@ class TestModels:
 
         page = client.models.list()
 
-        assert [model.id for model in page.data] == ["Qwen/Qwen3-0.6B"]
+        assert [model.id for model in page.data] == ["llama-3.1-8b-instruct"]
         assert all(isinstance(model, Model) for model in page)
 
     def test_retrieve(self, client: SEG, respx2_mock: MockRouter) -> None:
-        route = respx2_mock.get("/models/Qwen/Qwen3-0.6B").mock(return_value=httpx2.Response(200, json=MODEL))
+        route = respx2_mock.get("/models/llama-3.1-8b-instruct").mock(return_value=httpx2.Response(200, json=MODEL))
 
-        model = client.models.retrieve("Qwen/Qwen3-0.6B")
+        model = client.models.retrieve("llama-3.1-8b-instruct")
 
         assert model.owned_by == "sovereigneg"
-        assert route.calls.last.request.url.path.endswith("/models/Qwen/Qwen3-0.6B")
+        assert route.calls.last.request.url.path.endswith("/models/llama-3.1-8b-instruct")
 
     def test_delete_is_gone(self, client: SEG) -> None:
         assert not hasattr(client.models, "delete")

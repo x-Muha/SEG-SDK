@@ -13,7 +13,7 @@ from seg import SEG, AsyncSEG
 def sync_main() -> None:
     client = SEG()
     response = client.chat.completions.create(
-        model="Qwen/Qwen3-0.6B",
+        model="llama-3.1-8b-instruct",
         messages=[
             {
                 "role": "user",
@@ -36,7 +36,7 @@ def sync_main() -> None:
 async def async_main() -> None:
     client = AsyncSEG()
     response = await client.chat.completions.create(
-        model="Qwen/Qwen3-0.6B",
+        model="llama-3.1-8b-instruct",
         messages=[
             {
                 "role": "user",

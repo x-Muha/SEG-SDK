@@ -58,7 +58,7 @@ class Query(BaseModel):
 client = SEG()
 
 completion = client.chat.completions.parse(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[
         {
             "role": "system",

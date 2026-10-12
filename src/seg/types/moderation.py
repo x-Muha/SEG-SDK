@@ -105,10 +105,10 @@ class CategoryAppliedInputTypes(BaseModel):
     hate_threatening: List[Literal["text"]] = FieldInfo(alias="hate/threatening")
     """The applied input type(s) for the category 'hate/threatening'."""
 
-    illicit: List[Literal["text"]]
+    illicit: Optional[List[Literal["text"]]] = None
     """The applied input type(s) for the category 'illicit'."""
 
-    illicit_violent: List[Literal["text"]] = FieldInfo(alias="illicit/violent")
+    illicit_violent: Optional[List[Literal["text"]]] = FieldInfo(alias="illicit/violent", default=None)
     """The applied input type(s) for the category 'illicit/violent'."""
 
     self_harm: List[Literal["text", "image"]] = FieldInfo(alias="self-harm")
@@ -148,10 +148,10 @@ class CategoryScores(BaseModel):
     hate_threatening: float = FieldInfo(alias="hate/threatening")
     """The score for the category 'hate/threatening'."""
 
-    illicit: float
+    illicit: Optional[float] = None
     """The score for the category 'illicit'."""
 
-    illicit_violent: float = FieldInfo(alias="illicit/violent")
+    illicit_violent: Optional[float] = FieldInfo(alias="illicit/violent", default=None)
     """The score for the category 'illicit/violent'."""
 
     self_harm: float = FieldInfo(alias="self-harm")
@@ -180,7 +180,7 @@ class Moderation(BaseModel):
     categories: Categories
     """A list of the categories, and whether they are flagged or not."""
 
-    category_applied_input_types: CategoryAppliedInputTypes
+    category_applied_input_types: Optional[CategoryAppliedInputTypes] = None
     """
     A list of the categories along with the input type(s) that the score applies to.
     """

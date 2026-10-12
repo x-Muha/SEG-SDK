@@ -9,19 +9,19 @@ from .._models import BaseModel
 __all__ = [
     "Decision",
     "Answer",
-    "AnswerAnswerResourcePredicate",
-    "AnswerAnswerResourceChoice",
-    "AnswerAnswerResourceChoiceProbability",
-    "AnswerAnswerResourceScore",
-    "AnswerAnswerResourceScoreProbability",
-    "AnswerAnswerResourceRefusal",
+    "PredicateAnswer",
+    "ChoiceAnswer",
+    "ChoiceProbability",
+    "ScoreAnswer",
+    "ScoreProbability",
+    "RefusalAnswer",
     "Usage",
     "UsageInputTokensDetails",
     "UsageOutputTokensDetails",
 ]
 
 
-class AnswerAnswerResourcePredicate(BaseModel):
+class PredicateAnswer(BaseModel):
     name: Optional[str] = None
 
     probability: float
@@ -30,32 +30,32 @@ class AnswerAnswerResourcePredicate(BaseModel):
     """The type of the object. Always `predicate`."""
 
 
-class AnswerAnswerResourceChoiceProbability(BaseModel):
+class ChoiceProbability(BaseModel):
     probability: float
 
     value: Union[StrictStr, StrictBool]
     """
-    Choice values are typed: a string and a boolean with the same text are distinct.
+    Choice values may be strings or booleans; their text form must be unique within a question.
     """
 
 
-class AnswerAnswerResourceChoice(BaseModel):
+class ChoiceAnswer(BaseModel):
     choice: Union[StrictStr, StrictBool]
     """
-    Choice values are typed: a string and a boolean with the same text are distinct.
+    Choice values may be strings or booleans; their text form must be unique within a question.
     """
 
     confidence: float
 
     name: Optional[str] = None
 
-    probabilities: List[AnswerAnswerResourceChoiceProbability]
+    probabilities: List[ChoiceProbability]
 
     type: Literal["choice"]
     """The type of the object. Always `choice`."""
 
 
-class AnswerAnswerResourceScoreProbability(BaseModel):
+class ScoreProbability(BaseModel):
     label: str
 
     probability: float
@@ -63,12 +63,12 @@ class AnswerAnswerResourceScoreProbability(BaseModel):
     value: int
 
 
-class AnswerAnswerResourceScore(BaseModel):
+class ScoreAnswer(BaseModel):
     confidence: float
 
     name: Optional[str] = None
 
-    probabilities: List[AnswerAnswerResourceScoreProbability]
+    probabilities: List[ScoreProbability]
 
     score: float
 
@@ -76,7 +76,7 @@ class AnswerAnswerResourceScore(BaseModel):
     """The type of the object. Always `score`."""
 
 
-class AnswerAnswerResourceRefusal(BaseModel):
+class RefusalAnswer(BaseModel):
     """The model declined to answer this question.
 
     Other questions in the same request can still receive answers.
@@ -90,10 +90,10 @@ class AnswerAnswerResourceRefusal(BaseModel):
 
 Answer: TypeAlias = Annotated[
     Union[
-        AnswerAnswerResourcePredicate,
-        AnswerAnswerResourceChoice,
-        AnswerAnswerResourceScore,
-        AnswerAnswerResourceRefusal,
+        PredicateAnswer,
+        ChoiceAnswer,
+        ScoreAnswer,
+        RefusalAnswer,
     ],
     PropertyInfo(discriminator="type"),
 ]
@@ -125,5 +125,8 @@ class Decision(BaseModel):
     answers: List[Answer]
 
     model: str
+
+    object: Optional[Literal["decision"]] = None
+    """The object type. Always `decision` when returned by the SovereignEG API."""
 
     usage: Usage

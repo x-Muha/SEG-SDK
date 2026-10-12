@@ -51,7 +51,7 @@ class QuestionQuestionParamPredicate(TypedDict, total=False):
 class QuestionQuestionParamChoiceChoice(TypedDict, total=False):
     value: Required[Union[str, bool]]
     """
-    Choice values are typed: a string and a boolean with the same text are distinct.
+    Choice values may be strings or booleans; their text form must be unique within a question.
     """
 
     description: str

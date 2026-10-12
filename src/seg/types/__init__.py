@@ -22,7 +22,14 @@ from .shared import (
     ResponseFormatTextPython as ResponseFormatTextPython,
     ResponseFormatTextGrammar as ResponseFormatTextGrammar,
 )
-from .decision import Decision as Decision
+from .decision import (
+    Answer as Answer,
+    Decision as Decision,
+    ScoreAnswer as ScoreAnswer,
+    ChoiceAnswer as ChoiceAnswer,
+    RefusalAnswer as RefusalAnswer,
+    PredicateAnswer as PredicateAnswer,
+)
 from .embedding import Embedding as Embedding
 from .chat_model import ChatModel as ChatModel
 from .moderation import Moderation as Moderation

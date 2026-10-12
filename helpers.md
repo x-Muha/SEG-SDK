@@ -28,7 +28,7 @@ class MathResponse(BaseModel):
 
 client = SEG()
 completion = client.chat.completions.parse(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[
         {"role": "system", "content": "You are a helpful math tutor."},
         {"role": "user", "content": "solve 8x + 31 = 2"},
@@ -109,7 +109,7 @@ class Query(BaseModel):
 
 client = seg.SEG()
 completion = client.chat.completions.parse(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[
         {
             "role": "system",
@@ -156,7 +156,7 @@ from seg import AsyncSEG
 client = AsyncSEG()
 
 async with client.chat.completions.stream(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[...],
 ) as stream:
     async for event in stream:

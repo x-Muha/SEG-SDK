@@ -4,7 +4,7 @@ from seg import SEG, DefaultHttpx2Client
 client = SEG(http_client=DefaultHttpx2Client())
 
 completion = client.chat.completions.create(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[{"role": "user", "content": "Say this is a test"}],
     max_tokens=200,
 )

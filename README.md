@@ -29,15 +29,16 @@ from seg import SEG
 client = SEG()  # reads SEG_API_KEY from the environment
 
 completion = client.chat.completions.create(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[{"role": "user", "content": "Say hello in one short sentence."}],
     max_tokens=300,
 )
 print(completion.choices[0].message.content)
 ```
 
-Pick a model from `client.models.list()`; the catalog depends on your plan. Reasoning models return their
-thinking under `message.reasoning_content` (available as an extra field) and may need a larger `max_tokens`.
+Pick a model from `client.models.list()`; the catalog depends on your plan. Reasoning models may spend the
+`max_tokens` budget thinking before answering, and expose that thinking as extra fields on the message
+(`reasoning` / `reasoning_details`, or `reasoning_content` depending on the serving provider).
 
 ### Client options
 
@@ -56,7 +57,7 @@ useful for keys that rotate.
 ```python
 from seg import SEG
 
-client = SEG(api_key="sk-...", base_url="http://localhost:8000/v1", timeout=30.0, max_retries=3)
+client = SEG(api_key="sk-...", base_url="http://127.0.0.1:8000/v1", timeout=30.0, max_retries=3)
 ```
 
 Every option can also be set at module level for quick scripts:
@@ -81,7 +82,7 @@ client = AsyncSEG()
 
 async def main() -> None:
     completion = await client.chat.completions.create(
-        model="Qwen/Qwen3-0.6B",
+        model="llama-3.1-8b-instruct",
         messages=[{"role": "user", "content": "Say hello"}],
     )
     print(completion.choices[0].message.content)
@@ -98,7 +99,7 @@ Pass `stream=True` to receive Server-Sent Events as they are produced:
 
 ```python
 stream = client.chat.completions.create(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[{"role": "user", "content": "Count from 1 to 5."}],
     stream=True,
 )
@@ -127,7 +128,7 @@ class Answer(BaseModel):
 
 client = SEG()
 completion = client.chat.completions.parse(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[{"role": "user", "content": "Where is the Great Pyramid?"}],
     response_format=Answer,
 )
@@ -148,7 +149,7 @@ client.moderations.create(input="Some user text")
 
 # Models
 client.models.list()
-client.models.retrieve("Qwen/Qwen3-0.6B")
+client.models.retrieve("llama-3.1-8b-instruct")
 
 # Decisions: typed questions about one input
 client.decisions.create(
@@ -201,8 +202,9 @@ except seg.APIStatusError as e:
     print(e.status_code, e.request_id, e.body)
 ```
 
-Every response also exposes rate-limit headers (`X-RateLimit-Remaining-Requests` and friends) and
-`X-Request-Id`, which you can read through `with_raw_response`.
+Every response carries an `X-Request-Id` header, and inference responses (chat, embeddings, images,
+moderations, decisions) also carry rate-limit headers such as `X-RateLimit-Remaining-Requests`; read them
+through `with_raw_response`.
 
 ### Retries and timeouts
 
@@ -220,7 +222,7 @@ client.with_options(max_retries=5, timeout=60.0).chat.completions.create(...)
 
 ```python
 response = client.chat.completions.with_raw_response.create(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[{"role": "user", "content": "hi"}],
 )
 print(response.headers.get("X-Request-Id"))
@@ -253,7 +255,8 @@ connections.
 
 ### Logging
 
-Set `SEG_LOG=info` or `SEG_LOG=debug` to log requests and responses. Authorization headers are redacted.
+Set `SEG_LOG=debug` to log each request's method, response status, retries, and request id. Headers,
+bodies, and the API key are never written to the log.
 
 ## Supported API surface
 

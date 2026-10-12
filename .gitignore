@@ -18,3 +18,4 @@ dist
 .ruff_cache
 dist_tmp
 .inline-snapshot/files_using_external.txt
+testint_sdk.py

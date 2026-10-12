@@ -9,7 +9,7 @@ seg.default_headers = {"x-foo": "true"}
 
 # all API calls work in the exact same fashion as well
 stream = seg.chat.completions.create(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[
         {
             "role": "user",

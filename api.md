@@ -37,7 +37,7 @@ from seg.types.chat import (
     ChatCompletionAudio,
     ChatCompletionAudioParam,
     ChatCompletionChunk,
-    ChatCompletionContentPart,
+    ChatCompletionContentPartParam,
     ChatCompletionContentPartImage,
     ChatCompletionContentPartText,
     ChatCompletionDeveloperMessageParam,
@@ -46,15 +46,15 @@ from seg.types.chat import (
     ChatCompletionMessageParam,
     ChatCompletionMessageToolCall,
     ChatCompletionModality,
-    ChatCompletionNamedToolChoice,
-    ChatCompletionPredictionContent,
+    ChatCompletionNamedToolChoiceParam,
+    ChatCompletionPredictionContentParam,
     ChatCompletionReasoningEffort,
     ChatCompletionRole,
-    ChatCompletionStreamOptions,
+    ChatCompletionStreamOptionsParam,
     ChatCompletionSystemMessageParam,
     ChatCompletionTokenLogprob,
-    ChatCompletionTool,
-    ChatCompletionToolChoiceOption,
+    ChatCompletionToolParam,
+    ChatCompletionToolChoiceOptionParam,
     ChatCompletionToolMessageParam,
     ChatCompletionUserMessageParam,
     ParsedChatCompletion,
@@ -110,10 +110,10 @@ Types:
 ```python
 from seg.types import (
     Moderation,
-    ModerationImageURLInput,
+    ModerationImageURLInputParam,
     ModerationModel,
-    ModerationMultiModalInput,
-    ModerationTextInput,
+    ModerationMultiModalInputParam,
+    ModerationTextInputParam,
     ModerationCreateResponse,
 )
 ```
@@ -130,6 +130,9 @@ Types:
 from seg.types import Model
 ```
 
+`Model` carries the catalog metadata (`display_name`, `provider`, `modality`, `context_window`,
+`max_output_tokens`, `pricing`, `status`, ...); fields the backend does not return are `None`.
+
 Methods:
 
 - <code title="get /models/{model}">client.models.<a href="./src/seg/resources/models.py">retrieve</a>(model) -> <a href="./src/seg/types/model.py">Model</a></code>
@@ -141,7 +144,12 @@ Types:
 
 ```python
 from seg.types import (
+    Answer,
+    ChoiceAnswer,
     Decision,
+    PredicateAnswer,
+    RefusalAnswer,
+    ScoreAnswer,
     DecisionInputImageParam,
     DecisionInputMessageParam,
     DecisionInputPartUnionParam,

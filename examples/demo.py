@@ -8,7 +8,7 @@ client = SEG()
 # Non-streaming:
 print("----- standard request -----")
 completion = client.chat.completions.create(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[
         {
             "role": "user",
@@ -21,7 +21,7 @@ print(completion.choices[0].message.content)
 # Streaming:
 print("----- streaming request -----")
 stream = client.chat.completions.create(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[
         {
             "role": "user",
@@ -40,7 +40,7 @@ print()
 # Response headers:
 print("----- custom response headers test -----")
 response = client.chat.completions.with_raw_response.create(
-    model="Qwen/Qwen3-0.6B",
+    model="llama-3.1-8b-instruct",
     messages=[
         {
             "role": "user",

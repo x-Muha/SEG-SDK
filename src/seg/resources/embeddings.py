@@ -32,7 +32,7 @@ class Embeddings(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://github.com/x-Muha/SEG-SDK#accessing-raw-response-data-eg-headers
+        For more information, see https://github.com/x-Muha/SEG-SDK#raw-responses-and-headers
         """
         return EmbeddingsWithRawResponse(self)
 
@@ -41,7 +41,7 @@ class Embeddings(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://github.com/x-Muha/SEG-SDK#with_streaming_response
+        For more information, see https://github.com/x-Muha/SEG-SDK#raw-responses-and-headers
         """
         return EmbeddingsWithStreamingResponse(self)
 
@@ -134,7 +134,7 @@ class AsyncEmbeddings(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://github.com/x-Muha/SEG-SDK#accessing-raw-response-data-eg-headers
+        For more information, see https://github.com/x-Muha/SEG-SDK#raw-responses-and-headers
         """
         return AsyncEmbeddingsWithRawResponse(self)
 
@@ -143,7 +143,7 @@ class AsyncEmbeddings(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://github.com/x-Muha/SEG-SDK#with_streaming_response
+        For more information, see https://github.com/x-Muha/SEG-SDK#raw-responses-and-headers
         """
         return AsyncEmbeddingsWithStreamingResponse(self)
 
