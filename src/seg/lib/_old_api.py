@@ -8,13 +8,13 @@ from .._exceptions import SEGError
 
 INSTRUCTIONS = """
 
-You tried to access seg.{symbol}, but this is no longer supported in seg>=1.0.0 - see the README at https://github.com/sovereigneg/seg-sdk for the API.
+You tried to access seg.{symbol}, but this is no longer supported in seg>=1.0.0 - see the README at https://github.com/x-Muha/SEG-SDK for the API.
 
 You can run `seg migrate` to automatically upgrade your codebase to use the 1.0.0 interface. 
 
 Alternatively, you can pin your installation to the old version, e.g. `pip install seg==0.28`
 
-A detailed migration guide is available here: https://github.com/sovereigneg/seg-sdk/discussions/742
+A detailed migration guide is available here: https://github.com/x-Muha/SEG-SDK/discussions/742
 """
 
 

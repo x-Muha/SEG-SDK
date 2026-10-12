@@ -55,7 +55,7 @@ class Completions(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://github.com/sovereigneg/seg-sdk#accessing-raw-response-data-eg-headers
+        For more information, see https://github.com/x-Muha/SEG-SDK#accessing-raw-response-data-eg-headers
         """
         return CompletionsWithRawResponse(self)
 
@@ -64,7 +64,7 @@ class Completions(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://github.com/sovereigneg/seg-sdk#with_streaming_response
+        For more information, see https://github.com/x-Muha/SEG-SDK#with_streaming_response
         """
         return CompletionsWithStreamingResponse(self)
 
@@ -1415,7 +1415,7 @@ class Completions(SyncAPIResource):
                     print(event.delta, flush=True, end="")
         ```
 
-        When the context manager is entered, a `ChatCompletionStream` instance is returned which, like `.create(stream=True)` is an iterator. The full list of events that are yielded by the iterator are outlined in [these docs](https://github.com/sovereigneg/seg-sdk/blob/main/helpers.md#chat-completions-events).
+        When the context manager is entered, a `ChatCompletionStream` instance is returned which, like `.create(stream=True)` is an iterator. The full list of events that are yielded by the iterator are outlined in [these docs](https://github.com/x-Muha/SEG-SDK/blob/main/helpers.md#chat-completions-events).
 
         When the context manager exits, the response will be closed, however the `stream` instance is still available outside
         the context manager.
@@ -1489,7 +1489,7 @@ class AsyncCompletions(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://github.com/sovereigneg/seg-sdk#accessing-raw-response-data-eg-headers
+        For more information, see https://github.com/x-Muha/SEG-SDK#accessing-raw-response-data-eg-headers
         """
         return AsyncCompletionsWithRawResponse(self)
 
@@ -1498,7 +1498,7 @@ class AsyncCompletions(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://github.com/sovereigneg/seg-sdk#with_streaming_response
+        For more information, see https://github.com/x-Muha/SEG-SDK#with_streaming_response
         """
         return AsyncCompletionsWithStreamingResponse(self)
 
@@ -2849,7 +2849,7 @@ class AsyncCompletions(AsyncAPIResource):
                     print(event.delta, flush=True, end="")
         ```
 
-        When the context manager is entered, an `AsyncChatCompletionStream` instance is returned which, like `.create(stream=True)` is an async iterator. The full list of events that are yielded by the iterator are outlined in [these docs](https://github.com/sovereigneg/seg-sdk/blob/main/helpers.md#chat-completions-events).
+        When the context manager is entered, an `AsyncChatCompletionStream` instance is returned which, like `.create(stream=True)` is an async iterator. The full list of events that are yielded by the iterator are outlined in [these docs](https://github.com/x-Muha/SEG-SDK/blob/main/helpers.md#chat-completions-events).
 
         When the context manager exits, the response will be closed, however the `stream` instance is still available outside
         the context manager.

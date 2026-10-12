@@ -49,7 +49,7 @@ SEG_API_KEY=sk-... TEST_API_BASE_URL=https://sovereigneg.com/v1 uv run pytest te
 ## Using the repository from source
 
 ```sh
-pip install git+ssh://git@github.com/sovereigneg/seg-sdk.git
+pip install git+ssh://git@github.com/x-Muha/SEG-SDK.git
 # or, for a local checkout
 pip install -e /path/to/seg-sdk
 ```

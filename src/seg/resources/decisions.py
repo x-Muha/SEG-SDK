@@ -25,7 +25,7 @@ class Decisions(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://github.com/sovereigneg/seg-sdk#accessing-raw-response-data-eg-headers
+        For more information, see https://github.com/x-Muha/SEG-SDK#accessing-raw-response-data-eg-headers
         """
         return DecisionsWithRawResponse(self)
 
@@ -34,7 +34,7 @@ class Decisions(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://github.com/sovereigneg/seg-sdk#with_streaming_response
+        For more information, see https://github.com/x-Muha/SEG-SDK#with_streaming_response
         """
         return DecisionsWithStreamingResponse(self)
 
@@ -110,7 +110,7 @@ class AsyncDecisions(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://github.com/sovereigneg/seg-sdk#accessing-raw-response-data-eg-headers
+        For more information, see https://github.com/x-Muha/SEG-SDK#accessing-raw-response-data-eg-headers
         """
         return AsyncDecisionsWithRawResponse(self)
 
@@ -119,7 +119,7 @@ class AsyncDecisions(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://github.com/sovereigneg/seg-sdk#with_streaming_response
+        For more information, see https://github.com/x-Muha/SEG-SDK#with_streaming_response
         """
         return AsyncDecisionsWithStreamingResponse(self)
 

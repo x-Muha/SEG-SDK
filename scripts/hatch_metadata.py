@@ -11,7 +11,7 @@ def render_readme(text: str) -> str:
     # Preserve the relative-link rewrite previously configured in pyproject.toml.
     return re.sub(
         r"\[(.+?)\]\(((?!https?://)\S+?)\)",
-        r"[\1](https://github.com/sovereigneg/seg-sdk/tree/main/\g<2>)",
+        r"[\1](https://github.com/x-Muha/SEG-SDK/tree/main/\g<2>)",
         text,
     )
 

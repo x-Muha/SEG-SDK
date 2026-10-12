@@ -38,7 +38,7 @@ classifiers = [
 [project.urls]
 Homepage = "https://sovereigneg.com"
 Documentation = "https://sovereigneg.com/dashboard/docs"
-Repository = "https://github.com/sovereigneg/seg-sdk"
+Repository = "https://github.com/x-Muha/SEG-SDK"
 
 [project.optional-dependencies]
 aiohttp = [
